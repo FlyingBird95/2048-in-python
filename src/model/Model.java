@@ -1,5 +1,7 @@
 package model;
 
+import controller.State;
+
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -85,7 +87,7 @@ public class Model extends Observable{
         if (!availableSpace().isEmpty()) {
             int index = (int) (Math.random() * list.size()) % list.size();
             Tile emptyTime = list.get(index);
-            emptyTime.value = Math.random() < 0.9 ? 2 : 4;
+            emptyTime.setValue(Math.random() < 0.9 ? 2 : 4);
         }
     }
 
@@ -110,8 +112,8 @@ public class Model extends Observable{
         for (int x = 0; x < SIZE; x++) {
             for (int y = 0; y < SIZE; y++) {
                 Tile t = tileAt(x, y);
-                if ((x < 3 && t.value == tileAt(x + 1, y).value)
-                        || ((y < 3) && t.value == tileAt(x, y + 1).value)) {
+                if ((x < 3 && t.getValue() == tileAt(x + 1, y).getValue())
+                        || ((y < 3) && t.getValue() == tileAt(x, y + 1).getValue())) {
                     return true;
                 }
             }
@@ -162,8 +164,8 @@ public class Model extends Observable{
     private Tile[] mergeLine(Tile[] oldLine) {
         LinkedList<Tile> list = new LinkedList<>();
         for (int i = 0; i < SIZE && !oldLine[i].isEmpty(); i++) {
-            int num = oldLine[i].value;
-            if (i < 3 && oldLine[i].value == oldLine[i + 1].value) {
+            int num = oldLine[i].getValue();
+            if (i < 3 && oldLine[i].getValue() == oldLine[i + 1].getValue()) {
                 num *= 2;
                 myScore += num;
                 if (num == TARGET) {
@@ -241,24 +243,19 @@ public class Model extends Observable{
         };
     }
 
+    /**
+     * Transfer a controller.State-object to every observer (the view)
+     */
     public void modelChanged() {
         setChanged();
-        notifyObservers(this);
+        notifyObservers(new State(getValues(), myWin, myLose, myScore) );
     }
 
-    public Tile getTile(int i) {
-        return myTiles[i];
-    }
-
-    public int getScore() {
-        return myScore;
-    }
-
-    public boolean getWin(){
-        return myWin;
-    }
-
-    public boolean getLose(){
-        return myLose;
+    private int[] getValues(){
+        int[] array = new int[SIZE*SIZE];
+        for(int i =0; i<SIZE*SIZE; i++){
+           array[i] = myTiles[i].getValue();
+        }
+        return array;
     }
 }

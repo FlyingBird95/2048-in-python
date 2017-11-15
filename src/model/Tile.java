@@ -3,7 +3,7 @@ package model;
 import java.awt.*;
 
 public class Tile {
-    int value;
+    private int value;
 
     Tile() {
         this(0);
@@ -17,11 +17,11 @@ public class Tile {
         return value == 0;
     }
 
-    public Color getForeground() {
+    public static Color getForeground(int value) {
         return value < 16 ? new Color(0x776e65) :  new Color(0xf9f6f2);
     }
 
-    public Color getBackground() {
+    public static Color getBackground(int value) {
         switch (value) {
             case 2:    return new Color(0xeee4da);
             case 4:    return new Color(0xede0c8);
@@ -38,8 +38,12 @@ public class Tile {
         return new Color(0xcdc1b4);
     }
 
-    public int getValue(){
+    int getValue(){
         return value;
+    }
+
+    void setValue(int value){
+        this.value = value;
     }
 
     static boolean compare(Tile[] line1, Tile[] line2) {

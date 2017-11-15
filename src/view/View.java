@@ -1,5 +1,6 @@
 package view;
 
+import controller.State;
 import model.Model;
 import model.Tile;
 
@@ -19,7 +20,7 @@ public class View extends JPanel implements Observer{
     public static final int WIDTH = 340;
     public static final int HEIGHT = 400;
 
-    private Model model;
+    private State currentState;
 
     /**
      * The board is responsible for drawing the background and the score.
@@ -37,25 +38,24 @@ public class View extends JPanel implements Observer{
         super.paint(g);
         g.setColor(BG_COLOR);
         g.fillRect(0, 0, this.getSize().width, this.getSize().height);
-        if (model != null) {
+        if (currentState != null) {
             for (int y = 0; y < SIZE; y++) {
                 for (int x = 0; x < SIZE; x++) {
-                drawTile(g, model.getTile(x + y * SIZE), x, y);
+                drawTile(g, currentState.getValue(x + y * SIZE), x, y);
                 }
             }
         }
     }
 
-    private void drawTile(Graphics g2, Tile tile, int x, int y) {
+    private void drawTile(Graphics g2, int value, int x, int y) {
         Graphics2D g = ((Graphics2D) g2);
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_NORMALIZE);
-        int value = tile.getValue();
         int xOffset = offsetCoors(x);
         int yOffset = offsetCoors(y);
-        g.setColor(tile.getBackground());
+        g.setColor(Tile.getBackground(value));
         g.fillRoundRect(xOffset, yOffset, TILE_SIZE, TILE_SIZE, 14, 14);
-        g.setColor(tile.getForeground());
+        g.setColor(Tile.getForeground(value));
         final int size = value < 100 ? 36 : value < 1000 ? 32 : 24;
         final Font font = new Font(FONT_NAME, Font.BOLD, size);
         g.setFont(font);
@@ -69,30 +69,30 @@ public class View extends JPanel implements Observer{
         if (value != 0)
             g.drawString(s, xOffset + (TILE_SIZE - w) / 2, yOffset + TILE_SIZE - (TILE_SIZE - h) / 2 - 2);
 
-        if (model == null){
+        if (currentState == null){
             return;
         }
 
-        if (model.getWin() || model.getLose()) {
+        if (currentState.hasWon() || currentState.hasLost()) {
             g.setColor(new Color(255, 255, 255, 30));
             g.fillRect(0, 0, getWidth(), getHeight());
             g.setColor(new Color(78, 139, 202));
             g.setFont(new Font(FONT_NAME, Font.BOLD, 48));
-            if (model.getWin()) {
+            if (currentState.hasWon()) {
                 g.drawString("You won!", 68, 150);
             }
-            if (model.getLose()) {
+            if (currentState.hasLost()) {
                 g.drawString("Game over!", 50, 130);
                 g.drawString("You lose!", 64, 200);
             }
-            if (model.getWin() || model.getLose()) {
+            if (currentState.hasWon() || currentState.hasLost()) {
                 g.setFont(new Font(FONT_NAME, Font.PLAIN, 16));
                 g.setColor(new Color(128, 128, 128, 128));
                 g.drawString("Press ESC to play again", 80, getHeight() - 40);
             }
         }
         g.setFont(new Font(FONT_NAME, Font.PLAIN, 18));
-        g.drawString("Score: " + model.getScore(), 200, 365);
+        g.drawString("Score: " + currentState.getScore(), 200, 365);
 
     }
 
@@ -103,8 +103,8 @@ public class View extends JPanel implements Observer{
 
     @Override
     public void update(Observable observable, Object o) {
-        if (o instanceof Model){
-            this.model = (Model) o;
+        if (o instanceof State){
+            this.currentState = (State) o;
         }
         repaint();
     }
