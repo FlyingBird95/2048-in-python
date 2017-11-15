@@ -8,6 +8,8 @@ import java.awt.*;
 import java.util.Observable;
 import java.util.Observer;
 
+import static model.Model.SIZE;
+
 public class View extends JPanel implements Observer{
     private static final Color BG_COLOR = new Color(0xbbada0);
     private static final String FONT_NAME = "Arial";
@@ -36,9 +38,9 @@ public class View extends JPanel implements Observer{
         g.setColor(BG_COLOR);
         g.fillRect(0, 0, this.getSize().width, this.getSize().height);
         if (model != null) {
-            for (int y = 0; y < 4; y++) {
-                for (int x = 0; x < 4; x++) {
-                drawTile(g, model.getTile(x + y * 4), x, y);
+            for (int y = 0; y < SIZE; y++) {
+                for (int x = 0; x < SIZE; x++) {
+                drawTile(g, model.getTile(x + y * SIZE), x, y);
                 }
             }
         }

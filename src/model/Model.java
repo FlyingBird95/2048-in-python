@@ -10,6 +10,9 @@ import java.util.Observable;
 
 public class Model extends Observable{
 
+    public static final int SIZE = 4;
+    private static final int TARGET = 2048;
+
     private Tile[] myTiles;
     private boolean myWin = false;
     private boolean myLose = false;
@@ -30,7 +33,7 @@ public class Model extends Observable{
         myScore = 0;
         myWin = false;
         myLose = false;
-        myTiles = new Tile[4 * 4];
+        myTiles = new Tile[SIZE * SIZE];
         for (int i = 0; i < myTiles.length; i++) {
             myTiles[i] = new Tile();
         }
@@ -41,7 +44,7 @@ public class Model extends Observable{
 
     private void left() {
         boolean needAddTile = false;
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < SIZE; i++) {
             Tile[] line = getLine(i);
             Tile[] merged = mergeLine(moveLine(line));
             setLine(i, merged);
@@ -74,7 +77,7 @@ public class Model extends Observable{
     }
 
     private Tile tileAt(int x, int y) {
-        return myTiles[x + y * 4];
+        return myTiles[x + y * SIZE];
     }
 
     private void addTile() {
@@ -104,8 +107,8 @@ public class Model extends Observable{
         if (!isFull()) {
             return true;
         }
-        for (int x = 0; x < 4; x++) {
-            for (int y = 0; y < 4; y++) {
+        for (int x = 0; x < SIZE; x++) {
+            for (int y = 0; y < SIZE; y++) {
                 Tile t = tileAt(x, y);
                 if ((x < 3 && t.value == tileAt(x + 1, y).value)
                         || ((y < 3) && t.value == tileAt(x, y + 1).value)) {
@@ -117,7 +120,7 @@ public class Model extends Observable{
     }
 
     private Tile[] rotate(int angle) {
-        Tile[] newTiles = new Tile[4 * 4];
+        Tile[] newTiles = new Tile[SIZE * SIZE];
         int offsetX = 3, offsetY = 3;
         if (angle == 90) {
             offsetY = 0;
@@ -128,11 +131,11 @@ public class Model extends Observable{
         double rad = Math.toRadians(angle);
         int cos = (int) Math.cos(rad);
         int sin = (int) Math.sin(rad);
-        for (int x = 0; x < 4; x++) {
-            for (int y = 0; y < 4; y++) {
+        for (int x = 0; x < SIZE; x++) {
+            for (int y = 0; y < SIZE; y++) {
                 int newX = (x * cos) - (y * sin) + offsetX;
                 int newY = (x * sin) + (y * cos) + offsetY;
-                newTiles[(newX) + (newY) * 4] = tileAt(x, y);
+                newTiles[(newX) + (newY) * SIZE] = tileAt(x, y);
             }
         }
         return newTiles;
@@ -140,16 +143,16 @@ public class Model extends Observable{
 
     private Tile[] moveLine(Tile[] oldLine) {
         LinkedList<Tile> l = new LinkedList<>();
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < SIZE; i++) {
             if (!oldLine[i].isEmpty())
                 l.addLast(oldLine[i]);
         }
         if (l.size() == 0) {
             return oldLine;
         } else {
-            Tile[] newLine = new Tile[4];
-            ensureSize(l, 4);
-            for (int i = 0; i < 4; i++) {
+            Tile[] newLine = new Tile[SIZE];
+            ensureSize(l);
+            for (int i = 0; i < SIZE; i++) {
                 newLine[i] = l.removeFirst();
             }
             return newLine;
@@ -158,13 +161,12 @@ public class Model extends Observable{
 
     private Tile[] mergeLine(Tile[] oldLine) {
         LinkedList<Tile> list = new LinkedList<>();
-        for (int i = 0; i < 4 && !oldLine[i].isEmpty(); i++) {
+        for (int i = 0; i < SIZE && !oldLine[i].isEmpty(); i++) {
             int num = oldLine[i].value;
             if (i < 3 && oldLine[i].value == oldLine[i + 1].value) {
                 num *= 2;
                 myScore += num;
-                int ourTarget = 2048;
-                if (num == ourTarget) {
+                if (num == TARGET) {
                     myWin = true;
                 }
                 i++;
@@ -174,25 +176,25 @@ public class Model extends Observable{
         if (list.size() == 0) {
             return oldLine;
         } else {
-            ensureSize(list, 4);
-            return list.toArray(new Tile[4]);
+            ensureSize(list);
+            return list.toArray(new Tile[SIZE]);
         }
     }
 
     private Tile[] getLine(int index) {
-        Tile[] result = new Tile[4];
-        for (int i = 0; i < 4; i++) {
+        Tile[] result = new Tile[SIZE];
+        for (int i = 0; i < SIZE; i++) {
             result[i] = tileAt(i, index);
         }
         return result;
     }
 
     private void setLine(int index, Tile[] re) {
-        System.arraycopy(re, 0, myTiles, index * 4, 4);
+        System.arraycopy(re, 0, myTiles, index * SIZE, SIZE);
     }
 
-    private static void ensureSize(java.util.List<Tile> l, int s) {
-        while (l.size() != s) {
+    private static void ensureSize(List<Tile> l) {
+        while (l.size() < SIZE) {
             l.add(new Tile());
         }
     }
