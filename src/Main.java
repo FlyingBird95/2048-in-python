@@ -1,3 +1,4 @@
+import controller.RandomController;
 import model.Model;
 import view.View;
 
@@ -28,7 +29,16 @@ public class Main {
         game.setLocationRelativeTo(null);
         game.setVisible(true);
 
+        /*
+         * Either run the program with a manual controller:
+         *  view.addKeyListener(model.getKeyListener()))
+         * or run the program with an automatic controller:
+         *   new RandomController(model).start();
+         */
         view.addKeyListener(model.getKeyListener());
+        //new RandomController(model).start();
+
+
         model.modelChanged();
     }
 }

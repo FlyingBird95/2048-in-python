@@ -41,10 +41,9 @@ public class Model extends Observable{
         }
         addTile();
         addTile();
-        modelChanged();
     }
 
-    private void left() {
+    public void left() {
         boolean needAddTile = false;
         for (int i = 0; i < SIZE; i++) {
             Tile[] line = getLine(i);
@@ -58,24 +57,32 @@ public class Model extends Observable{
         if (needAddTile) {
             addTile();
         }
+        if (!myWin && !canMove()) {
+            myLose = true;
+        }
+
+        modelChanged();
     }
 
-    private void right() {
+    public void right() {
         myTiles = rotate(180);
         left();
         myTiles = rotate(180);
+        modelChanged();
     }
 
-    private void up() {
+    public void up() {
         myTiles = rotate(270);
         left();
         myTiles = rotate(90);
+        modelChanged();
     }
 
-    private void down() {
+    public void down() {
         myTiles = rotate(90);
         left();
         myTiles = rotate(270);
+        modelChanged();
     }
 
     private Tile tileAt(int x, int y) {
@@ -89,6 +96,7 @@ public class Model extends Observable{
             Tile emptyTime = list.get(index);
             emptyTime.setValue(Math.random() < 0.9 ? 2 : 4);
         }
+        modelChanged();
     }
 
     private List<Tile> availableSpace() {
@@ -234,11 +242,6 @@ public class Model extends Observable{
                             break;
                     }
                 }
-
-                if (!myWin && !canMove()) {
-                    myLose = true;
-                }
-                modelChanged();
             }
         };
     }
@@ -248,7 +251,19 @@ public class Model extends Observable{
      */
     public void modelChanged() {
         setChanged();
-        notifyObservers(new State(getValues(), myWin, myLose, myScore) );
+        notifyObservers(getState() );
+    }
+
+    public boolean gameOver(){
+        return myWin || myLose;
+    }
+
+    public int getScore(){
+        return myScore;
+    }
+
+    State getState(){
+        return new State(getValues(), myWin, myLose, myScore);
     }
 
     private int[] getValues(){
