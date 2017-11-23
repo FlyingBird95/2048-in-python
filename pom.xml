@@ -11,10 +11,14 @@
     <dependencies>
         <dependency>
             <groupId>org.deeplearning4j</groupId>
-            <artifactId>arbiter-core</artifactId>
-            <version>0.9.1</version>
+            <artifactId>deeplearning4j-core</artifactId>
+            <version>LATEST</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.nd4j</groupId>
+            <artifactId>nd4j-native-platform</artifactId>
+            <version>LATEST</version>
         </dependency>
     </dependencies>
-
-
 </project>

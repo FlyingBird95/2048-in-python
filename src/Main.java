@@ -4,6 +4,8 @@ import view.View;
 
 import javax.swing.*;
 
+import org.nd4j.linalg.api.ndarray.INDArray;
+
 public class Main {
 
     private static final String TITLE = "2048 Game";
