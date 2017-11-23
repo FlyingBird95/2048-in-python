@@ -22,4 +22,4 @@ The code is created using Maven. Therefore, you first have to install the right 
     
     mvn clean install
 
-After installation is succesful, the code starts at the main, located in (src/main/java/Main.java)[src/main/java/Main.java].
+After installation is succesful, the code starts at the main, located in [src/main/java/Main.java](src/main/java/Main.java).
