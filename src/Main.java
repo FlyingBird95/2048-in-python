@@ -37,8 +37,5 @@ public class Main {
          */
         view.addKeyListener(model.getKeyListener());
         //new RandomController(model).start();
-
-
-        model.modelChanged();
     }
 }
