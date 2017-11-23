@@ -1,7 +1,5 @@
 package controller;
 
-import model.Model;
-
 public class SemiRandomController extends AbstractController {
 
     /**
@@ -9,11 +7,6 @@ public class SemiRandomController extends AbstractController {
      */
     public SemiRandomController(){
         super();
-    }
-
-    public SemiRandomController(Model model){
-        super();
-        setModel(model);
     }
 
     @Override

@@ -1,7 +1,5 @@
 package controller;
 
-import model.Model;
-
 public class RandomController extends AbstractController {
 
     /**
@@ -9,11 +7,6 @@ public class RandomController extends AbstractController {
      */
     public RandomController(){
         super();
-    }
-
-    public RandomController(Model model){
-        super();
-        setModel(model);
     }
 
     @Override

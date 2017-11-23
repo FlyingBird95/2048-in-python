@@ -1,10 +1,7 @@
-import controller.RandomController;
-import controller.SemiRandomController;
-import controller.statistics.ControllerManager;
+import model.Model;
+import view.View;
 
 public class Main {
-
-    private static final String TITLE = "2048 Game";
 
     /**
      * The main method is responsible for creating the model and the view.
@@ -13,27 +10,19 @@ public class Main {
      * The model is bounded to the view, using a keyListener.
      */
     public static void main(String[] args) {
-//        JFrame game = new JFrame();
-//        game.setTitle(TITLE);
-//        game.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-//        game.setSize(View.WIDTH, View.HEIGHT);
-//        game.setResizable(false);
-
-//        Model model = new Model();
-//        View view = new View();
-//        model.addObserver(view);
-//        game.add(view);
-
-//        game.setLocationRelativeTo(null);
-//        game.setVisible(true);
 
         /*
-         * Either run the program with a manual controller:
-         *  view.addKeyListener(model.getKeyListener()))
-         * or run the program with an automatic controller:
-         *   new RandomController(model).start();
+         * EITHER USE THIS
          */
-        //view.addKeyListener(model.getKeyListener());
-        new ControllerManager(SemiRandomController.class).start();
+        View view = View.createView();
+        Model model = new Model();
+        model.addObserver(view);
+        model.modelChanged();
+        view.addKeyListener(model.getKeyListener());
+
+        /*
+         * OR THIS:
+         */
+        //new ControllerManager(SemiRandomController.class).start();
     }
 }

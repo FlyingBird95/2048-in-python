@@ -1,7 +1,6 @@
 package view;
 
 import controller.State;
-import model.Model;
 import model.Tile;
 
 import javax.swing.*;
@@ -12,20 +11,43 @@ import java.util.Observer;
 import static model.Model.SIZE;
 
 public class View extends JPanel implements Observer{
+
+    private static final String TITLE = "2048 Game";
     private static final Color BG_COLOR = new Color(0xbbada0);
     private static final String FONT_NAME = "Arial";
     private static final int TILE_SIZE = 64;
     private static final int TILES_MARGIN = 16;
 
-    public static final int WIDTH = 340;
-    public static final int HEIGHT = 400;
+    private static final int WIDTH = 340;
+    private static final int HEIGHT = 400;
 
     private State currentState;
+
+
+    /**
+     * Creates the view
+     * @return the view for the game
+     */
+    public static View createView(){
+        JFrame game = new JFrame();
+        game.setTitle(TITLE);
+        game.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        game.setSize(View.WIDTH, View.HEIGHT);
+        game.setResizable(false);
+
+        View view = new View();
+        game.add(view);
+
+        game.setLocationRelativeTo(null);
+        game.setVisible(true);
+        return view;
+    }
+
 
     /**
      * The board is responsible for drawing the background and the score.
      */
-    public View() {
+    private View() {
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setFocusable(true);
     }
