@@ -24,6 +24,12 @@
             <artifactId>nd4j-native-platform</artifactId>
             <version>LATEST</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.datavec</groupId>
+            <artifactId>datavec-api</artifactId>
+            <version>LATEST</version>
+        </dependency>
     </dependencies>
 
     <build>
