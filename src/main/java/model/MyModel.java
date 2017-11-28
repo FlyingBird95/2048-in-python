@@ -5,17 +5,24 @@ package model;
  */
 public class MyModel {
 
-    protected int[] values = new int[16];
-    protected int[] potentialMoves = new int[]{1,2,3,4}; //dummie values
-    protected int score;
-
+    public int[] values;
+    public int[] potentialMoves;
+    public int score;
 
     public MyModel(){
-
+        this.values = new int[16];
+        this.score = 0;
     }
 
-
-    public int[] getPotentialMoves(){
-        return this.potentialMoves;
-    }
+//    public int[] getModel(){
+//        return values;
+//    }
+//
+//    public void setModel(int[] v){
+//        this.values = v;
+//    }
+//
+//    public int[] getPotentialMoves(){
+//        return this.potentialMoves;
+//    }
 }

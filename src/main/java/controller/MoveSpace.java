@@ -30,12 +30,12 @@ public class MoveSpace implements ActionSpace<Integer>{
 
     @Override
     public Object encode(Integer integer) {
-        return this.model.getPotentialMoves()[integer];
+        return this.model.potentialMoves[integer];
     }
 
     @Override
     public int getSize() {
-        return this.model.getPotentialMoves().length;
+        return this.model.potentialMoves.length;
     }
 
     @Override
