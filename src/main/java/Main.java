@@ -1,5 +1,13 @@
-import model.Model;
-import view.View;
+//import model.Model;
+//import view.View;
+
+import com.google.common.primitives.Ints;
+import controller.MyController;
+import model.MyModel;
+import view.MyView;
+
+import java.lang.reflect.Array;
+import java.util.Arrays;
 
 public class Main {
 
@@ -14,11 +22,25 @@ public class Main {
         /*
          * EITHER USE THIS
          */
-        View view = View.createView();
-        Model model = new Model();
-        model.addObserver(view);
-        model.modelChanged();
-        view.addKeyListener(model.getKeyListener());
+//        View view = View.createView();
+//        Model model = new Model();
+//        model.addObserver(view);
+//        model.modelChanged();
+//        view.addKeyListener(model.getKeyListener());
+
+        MyModel model = new MyModel();
+
+        MyController controller = new MyController(model);
+        MyView view = MyView.createView();
+        controller.addObserver(view);
+        controller.modelChanged();
+
+        view.setController(controller);
+
+        view.addKeyListener(view.getKeyListenerPressed());
+        view.addKeyListener(view.getKeyListenerReleased());
+
+
 
         /*
          * OR THIS:
