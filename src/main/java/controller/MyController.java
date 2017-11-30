@@ -143,39 +143,23 @@ public class MyController extends Observable {
     }
 
     private void addTile() {
-        int j = 0;
-        int[] temp = new int[this.model.values.length];
+        if(this.isFull())
+            return;
+
+        int count = 0;
+        int[] resultingIndices = new int[this.model.values.length];
         for (int i = 0; i < this.model.values.length; i++) {
             if (0 == this.model.values[i]) {
-                temp[j++] = i;
+                resultingIndices[count++] = i;
             }
         }
-        int [] resultingIndices = new int[j];
-        System.arraycopy( temp, 0, resultingIndices, 0, j );
 
-        if (resultingIndices.length != 0 ) {
-            int rnd = new Random().nextInt(resultingIndices.length);
-            this.model.values[resultingIndices[rnd]] = Math.random() < 0.9 ? 2 : 4;
-        }
-        modelChanged();
-    }
-
-    private int[] availableSpace() {
-        int j = 0;
-        int[] temp = new int[this.model.values.length];
-        for(int i = 0; i < this.model.values.length; i++){
-            if(this.model.values[i] == 0){
-                temp[j++] = this.model.values[i];
-            }
-        }
-        int [] newArray = new int[j];
-        System.arraycopy( temp, 0, newArray, 0, j );
-
-        return newArray;
+        int rnd = new Random().nextInt(count);
+        this.model.values[resultingIndices[rnd]] = Math.random() < 0.9 ? 2 : 4;
     }
 
     private boolean isFull() {
-        return this.contains(0);
+        return !this.contains(0);
     }
 
     private boolean contains(int value) {

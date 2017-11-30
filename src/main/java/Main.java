@@ -15,9 +15,6 @@ public class Main {
      */
     public static void main(String[] args) {
 
-        /*
-         * EITHER USE THIS
-         */
 //        View view = View.createView();
 //        Model model = new Model();
 //        model.addObserver(view);
@@ -25,25 +22,13 @@ public class Main {
 //        view.addKeyListener(model.getKeyListener());
 
         int modelSize = 4;
-
         MyModel model = new MyModel(modelSize);
-
         MyController controller = new MyController(model, modelSize);
         controller.resetModel();
         controller.model.values = new int[]{2, 2, 0, 0,
                                             2, 0, 2, 0,
                                             0, 2, 2, 2,
                                             2, 0, 2, 2};
-//        controller.doMove();
-
-//        controller.left();
-//        controller.right();
-//        controller.up();
-//        controller.down();
-//
-//        System.out.println(model.toString());
-//        controller.doMove();
-//        System.out.println(model.toString());
 
         MyView view = MyView.createView();
         controller.addObserver(view);

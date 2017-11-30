@@ -26,8 +26,8 @@ public class MyView extends JPanel implements Observer{
 
     private MyController controller;
 
-    private int i = 0;
     private boolean keyPressed = false;
+
     /**
      * Creates the view
      * @return the view for the game
@@ -133,20 +133,9 @@ public class MyView extends JPanel implements Observer{
 
     @Override
     public void update(Observable observable, Object o) {
-        System.out.println("Repaint \n" + i++);
-
         if (o instanceof MyController){
             this.controller = (MyController) o;
-
-            for(int x = 0; x < SIZE * SIZE; x++){
-//                if(x % SIZE == 0)
-//                    System.out.println();
-                System.out.print(this.controller.model.values[x]);
-            }
         }
-        System.out.println();
-
-
         repaint();
     }
 
