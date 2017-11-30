@@ -1,6 +1,6 @@
 package model;
 
-import java.util.Observable;
+import java.util.Arrays;
 
 /**
  * Created by T on 28-11-2017.
@@ -8,27 +8,19 @@ import java.util.Observable;
 public class MyModel {
 
     public int[] values;
+
     public int[] potentialMoves;
     public int score;
     public boolean win = false;
     public boolean lose = false;
 
-    public MyModel() {
-        this.values = new int[16];
+    public MyModel(int size) {
+        this.values = new int[size * size];
         this.score = 0;
     }
 
-
-
-//    public int[] getModel(){
-//        return values;
-//    }
-//
-//    public void setModel(int[] v){
-//        this.values = v;
-//    }
-//
-//    public int[] getPotentialMoves(){
-//        return this.potentialMoves;
-//    }
+    @Override
+    public String toString() {
+        return Arrays.toString(this.values);
+    }
 }

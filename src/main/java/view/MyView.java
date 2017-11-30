@@ -153,7 +153,7 @@ public class MyView extends JPanel implements Observer{
     /**
      * KeyListener for the model. The following keys are supported:
      * - Escape: for resetting the game.
-     * - Left, Right, Down and Up: for making a move.
+     * - Left, Right, Down and Up: for making a doMove.
      * @return the keyListener for the model.
      */
     public KeyListener getKeyListenerPressed(){
@@ -162,7 +162,6 @@ public class MyView extends JPanel implements Observer{
             public void keyPressed(KeyEvent e) {
                 if(keyPressed)
                     return;
-
                 keyPressed = true;
 
                 if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
@@ -175,16 +174,16 @@ public class MyView extends JPanel implements Observer{
                 if (!controller.myWin && !controller.myLose) {
                     switch (e.getKeyCode()) {
                         case KeyEvent.VK_LEFT:
-                            controller.left();
+                            controller.doMove(3);
                             break;
                         case KeyEvent.VK_RIGHT:
-                            controller.right();
+                            controller.doMove(1);
                             break;
                         case KeyEvent.VK_DOWN:
-                            controller.down();
+                            controller.doMove(2);
                             break;
                         case KeyEvent.VK_UP:
-                            controller.up();
+                            controller.doMove(0);
                             break;
                     }
                 }

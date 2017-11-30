@@ -1,13 +1,9 @@
 //import model.Model;
 //import view.View;
 
-import com.google.common.primitives.Ints;
 import controller.MyController;
 import model.MyModel;
 import view.MyView;
-
-import java.lang.reflect.Array;
-import java.util.Arrays;
 
 public class Main {
 
@@ -28,9 +24,27 @@ public class Main {
 //        model.modelChanged();
 //        view.addKeyListener(model.getKeyListener());
 
-        MyModel model = new MyModel();
+        int modelSize = 4;
 
-        MyController controller = new MyController(model);
+        MyModel model = new MyModel(modelSize);
+
+        MyController controller = new MyController(model, modelSize);
+        controller.resetModel();
+        controller.model.values = new int[]{2, 2, 0, 0,
+                                            2, 0, 2, 0,
+                                            0, 2, 2, 2,
+                                            2, 0, 2, 2};
+//        controller.doMove();
+
+//        controller.left();
+//        controller.right();
+//        controller.up();
+//        controller.down();
+//
+//        System.out.println(model.toString());
+//        controller.doMove();
+//        System.out.println(model.toString());
+
         MyView view = MyView.createView();
         controller.addObserver(view);
         controller.modelChanged();
