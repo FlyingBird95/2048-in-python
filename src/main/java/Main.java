@@ -18,7 +18,6 @@ public class Main {
         int modelSize = 4;
         Model model = new Model(modelSize);
         Controller controller = new Controller(model, modelSize);
-        controller.resetModel();
 
         View view = View.createView(modelSize);
         controller.addObserver(view);

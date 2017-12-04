@@ -23,9 +23,7 @@ public class View extends JPanel implements Observer{
 
 
     private int size;
-
     private Controller controller;
-
     private boolean keyPressed = false;
 
     /**
@@ -147,43 +145,54 @@ public class View extends JPanel implements Observer{
         return new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if(keyPressed)
-                    return;
-                keyPressed = true;
+            if(keyPressed)
+                return;
+            keyPressed = true;
 
-                if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-                    controller.resetModel();
-                }
-                if (!controller.canMove()) {
-                    controller.myLose = true;
-                }
+            if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                controller.resetModel();
+            }
+            if (!controller.canMove()) {
+                controller.model.lose = true;
+            }
 
-                if (!controller.myWin && !controller.myLose) {
-                    switch (e.getKeyCode()) {
-                        case KeyEvent.VK_LEFT:
-                            controller.doMove(3);
-                            break;
-                        case KeyEvent.VK_RIGHT:
-                            controller.doMove(1);
-                            break;
-                        case KeyEvent.VK_DOWN:
-                            controller.doMove(2);
-                            break;
-                        case KeyEvent.VK_UP:
-                            controller.doMove(0);
-                            break;
-                    }
+            if (!controller.model.win && !controller.model.lose) {
+                switch (e.getKeyCode()) {
+                    case KeyEvent.VK_LEFT:
+                        if (controller.checkMove(Controller.Move.LEFT)) {
+                            controller.doMove(Controller.Move.LEFT);
+                        }
+                        break;
+                    case KeyEvent.VK_RIGHT:
+                        if (controller.checkMove(Controller.Move.RIGHT)) {
+                            controller.doMove(Controller.Move.RIGHT);
+                        }
+                        break;
+                    case KeyEvent.VK_DOWN:
+                        if (controller.checkMove(Controller.Move.DOWN)) {
+                            controller.doMove(Controller.Move.DOWN);
+                        }
+                        break;
+                    case KeyEvent.VK_UP:
+                        if (controller.checkMove(Controller.Move.UP)) {
+                            controller.doMove(Controller.Move.UP);
+                        }
+                        break;
                 }
+            }
+            System.out.println("possible moves: " + controller.getPossibleMoves());
             }
         };
     }
 
     public KeyListener getKeyListenerReleased(){
+
         return new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
                 keyPressed = false;
             }
         };
+
     }
 }

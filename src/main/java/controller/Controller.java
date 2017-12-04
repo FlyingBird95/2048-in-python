@@ -3,43 +3,47 @@ package controller;
 import model.Model;
 import org.apache.commons.lang3.ArrayUtils;
 
-import java.util.Arrays;
-import java.util.Observable;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created by Willem on 28-11-2017.
  */
 public class Controller extends Observable {
 
-    // 0 = Up, 1 = Right, 2 = Down, 3 = Left
-    protected final int[] allMoves = {0, 1, 2, 3};
 
+    /**
+     * Define an enum with the available moves
+     */
+    public enum Move {
+            UP, RIGHT, DOWN, LEFT
+    }
+
+    // class variables
     public Model model;
-
-    public final int SIZE;
-    private static final int TARGET = 2048;
-
-    public boolean myWin = false;
-    public boolean myLose = false;
-    private int myScore = 0;
+    private final int SIZE;
 
     public Controller(Model m, int size){
         this.model = m;
         this.SIZE = size;
+        resetModel();
     }
 
     public void resetModel(){
-        myScore = 0;
-        myWin = false;
-        myLose = false;
-
+        model.score = 0;
+        model.win = false;
+        model.lose =false;
         this.model.values = new int[SIZE * SIZE];
+
+        // The game starts with 2 tiles
         this.addTile();
         this.addTile();
     }
 
-    protected void rotate(int angle) {
+    /**
+     * Rotates the tiles by a given angle
+     * @param angle the angle in degrees
+     */
+    private void rotate(int angle) {
         int[] newTiles = new int[SIZE * SIZE];
         int offsetX = SIZE - 1, offsetY = SIZE - 1;
         if (angle == 90) {
@@ -61,26 +65,27 @@ public class Controller extends Observable {
         this.model.values = newTiles;
     }
 
-    public void doMove(int move) {
+    public void doMove(Move move) {
         switch (move){
-            case 0: //Up
+            case UP:
                 this.rotate(270);
                 this.doMove();
                 this.rotate(90);
                 break;
-            case 1: //Right
+            case RIGHT:
                 this.rotate(180);
                 this.doMove();
                 this.rotate(180);
                 break;
-            case 2: //Down
+            case DOWN:
                 this.rotate(90);
                 this.doMove();
                 this.rotate(270);
                 break;
-            case 3: //Left
+            case LEFT:
                 this.doMove();
                 break;
+
         }
         this.addTile();
         this.modelChanged();
@@ -90,7 +95,7 @@ public class Controller extends Observable {
         int[] line = new int[SIZE];
         for (int i = 0; i < SIZE; i++) {
             this.getLine(i, line);
-            this.myScore += this.mergeLine(line);
+            this.model.score += this.mergeLine(line);
             this.setLine(i, line);
         }
     }
@@ -116,7 +121,6 @@ public class Controller extends Observable {
                 current *= 2;
                 i++;
             }
-
             line[move++] = current;
         }
         return score;
@@ -131,12 +135,41 @@ public class Controller extends Observable {
         return output;
     }
 
-    public void possibleMoves(){
-        if(!this.isFull()) {
-            this.model.potentialMoves = this.allMoves.clone();
-            return;
+    /**
+     * The method works by first doing the move, and then see if the values
+     * in the model are changed
+     * @return a list of enum-Move with the possible moves.
+     */
+    public List<Move> getPossibleMoves(){
+        List<Move> possibleMoves = new ArrayList<>();
+
+        for(Move move : Move.values()){
+            if (checkMove(move)){
+                possibleMoves.add(move);
+            }
         }
-        // TODO: Calculate possible moves
+
+        return possibleMoves;
+    }
+
+    /**
+     * Checks if a certain move can be done
+     * @param move the move to be checked
+     * @return true if the move can be done, false otherwise
+     */
+    public boolean checkMove(Move move){
+        boolean answer = false;
+
+        // keep a copy to return to the previous move
+        int[] copy = ArrayUtils.clone(model.values);
+
+        doMove(move);
+        if (!Arrays.equals(copy, model.values)){
+            answer = true;
+        }
+        // reset the values
+        model.values = ArrayUtils.clone(copy);
+        return answer;
     }
 
     private void addTile() {
@@ -167,20 +200,12 @@ public class Controller extends Observable {
         return this.model.values[x + y * SIZE];
     }
 
+    /**
+     * The player can do a move, if there is at least 1 item in possibleMoves;
+     * @return
+     */
     public boolean canMove() {
-        if (!isFull()) {
-            return true;
-        }
-        for (int x = 0; x < SIZE; x++) {
-            for (int y = 0; y < SIZE; y++) {
-                int i = tileAt(x, y);
-                if ((x < 3 && i == tileAt(x + 1, y))
-                        || ((y < 3) && i == tileAt(x, y + 1))) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return getPossibleMoves().size() > 0;
     }
 
     public void modelChanged() {
