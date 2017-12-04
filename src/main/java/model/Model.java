@@ -7,7 +7,7 @@ import java.util.Arrays;
 /**
  * Created by T on 28-11-2017.
  */
-public class MyModel implements Encodable {
+public class Model implements Encodable {
 
     public int[] values;
 
@@ -16,7 +16,7 @@ public class MyModel implements Encodable {
     public boolean win = false;
     public boolean lose = false;
 
-    public MyModel(int size) {
+    public Model(int size) {
         this.values = new int[size * size];
         this.score = 0;
     }

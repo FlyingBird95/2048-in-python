@@ -1,14 +1,9 @@
 //import model.Model;
 //import view.View;
 
-import controller.MoveSpace;
-import controller.MyController;
-import model.MyModel;
-import org.deeplearning4j.rl4j.learning.Learning;
-import org.deeplearning4j.rl4j.learning.sync.qlearning.discrete.QLearningDiscreteDense;
-import org.deeplearning4j.rl4j.network.dqn.IDQN;
-import org.deeplearning4j.rl4j.space.ActionSpace;
-import view.MyView;
+import controller.Controller;
+import model.Model;
+import view.View;
 
 public class Main {
 
@@ -21,11 +16,11 @@ public class Main {
     public static void main(String[] args) {
 
         int modelSize = 4;
-        MyModel model = new MyModel(modelSize);
-        MyController controller = new MyController(model, modelSize);
+        Model model = new Model(modelSize);
+        Controller controller = new Controller(model, modelSize);
         controller.resetModel();
 
-        MyView view = MyView.createView(modelSize);
+        View view = View.createView(modelSize);
         controller.addObserver(view);
         controller.modelChanged();
 
@@ -36,7 +31,7 @@ public class Main {
 
 
         // Learning methods
-        //Learning<MyModel, Integer, MoveSpace, IDQN> dql = new QLearningDiscreteDense<MyModel>(mdp, TOY_NET, TOY_QL, manager);
+        //Learning<Model, Integer, MoveSpace, IDQN> dql = new QLearningDiscreteDense<Model>(mdp, TOY_NET, TOY_QL, manager);
 
     }
 }

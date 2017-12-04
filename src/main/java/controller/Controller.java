@@ -1,6 +1,6 @@
 package controller;
 
-import model.MyModel;
+import model.Model;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Arrays;
@@ -10,12 +10,12 @@ import java.util.Random;
 /**
  * Created by Willem on 28-11-2017.
  */
-public class MyController extends Observable {
+public class Controller extends Observable {
 
     // 0 = Up, 1 = Right, 2 = Down, 3 = Left
     protected final int[] allMoves = {0, 1, 2, 3};
 
-    public MyModel model;
+    public Model model;
 
     public final int SIZE;
     private static final int TARGET = 2048;
@@ -24,7 +24,7 @@ public class MyController extends Observable {
     public boolean myLose = false;
     private int myScore = 0;
 
-    public MyController(MyModel m, int size){
+    public Controller(Model m, int size){
         this.model = m;
         this.SIZE = size;
     }

@@ -1,6 +1,6 @@
 package view;
 
-import controller.MyController;
+import controller.Controller;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,7 +10,7 @@ import java.awt.event.KeyListener;
 import java.util.Observable;
 import java.util.Observer;
 
-public class MyView extends JPanel implements Observer{
+public class View extends JPanel implements Observer{
 
     private static final String TITLE = "2048 Game";
     private static final Color BG_COLOR = new Color(0xbbada0);
@@ -24,7 +24,7 @@ public class MyView extends JPanel implements Observer{
 
     private int size;
 
-    private MyController controller;
+    private Controller controller;
 
     private boolean keyPressed = false;
 
@@ -32,14 +32,14 @@ public class MyView extends JPanel implements Observer{
      * Creates the view
      * @return the view for the game
      */
-    public static MyView createView(int size){
+    public static View createView(int size){
         JFrame game = new JFrame();
         game.setTitle(TITLE);
         game.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        game.setSize(MyView.WIDTH, MyView.HEIGHT);
+        game.setSize(View.WIDTH, View.HEIGHT);
         game.setResizable(false);
 
-        MyView view = new MyView(size);
+        View view = new View(size);
         game.add(view);
 
         game.setLocationRelativeTo(null);
@@ -51,14 +51,14 @@ public class MyView extends JPanel implements Observer{
     /**
      * The board is responsible for drawing the background and the score.
      */
-    private MyView(int size) {
+    private View(int size) {
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         this.size = size;
         setFocusable(true);
     }
 
 
-    public void setController(MyController c){
+    public void setController(Controller c){
         this.controller = c;
     }
 
@@ -82,9 +82,9 @@ public class MyView extends JPanel implements Observer{
         g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_NORMALIZE);
         int xOffset = offsetCoors(x);
         int yOffset = offsetCoors(y);
-        g.setColor(MyTile.getBackground(value));
+        g.setColor(Tile.getBackground(value));
         g.fillRoundRect(xOffset, yOffset, TILE_SIZE, TILE_SIZE, 14, 14);
-        g.setColor(MyTile.getForeground(value));
+        g.setColor(Tile.getForeground(value));
         final int size = value < 100 ? 36 : value < 1000 ? 32 : 24;
         final Font font = new Font(FONT_NAME, Font.BOLD, size);
         g.setFont(font);
@@ -131,8 +131,8 @@ public class MyView extends JPanel implements Observer{
 
     @Override
     public void update(Observable observable, Object o) {
-        if (o instanceof MyController){
-            this.controller = (MyController) o;
+        if (o instanceof Controller){
+            this.controller = (Controller) o;
         }
         repaint();
     }

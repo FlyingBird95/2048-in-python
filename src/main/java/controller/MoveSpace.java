@@ -2,7 +2,7 @@ package controller;
 
 import java.util.Random;
 
-import model.MyModel;
+import model.Model;
 import org.deeplearning4j.rl4j.space.ActionSpace;
 
 /**
@@ -11,9 +11,9 @@ import org.deeplearning4j.rl4j.space.ActionSpace;
 public class MoveSpace implements ActionSpace<Integer>{
 
     protected Random random;
-    protected MyModel model;
+    protected Model model;
 
-    public MoveSpace(MyModel model){
+    public MoveSpace(Model model){
         this.model = model;
         this.random = new Random();
     }

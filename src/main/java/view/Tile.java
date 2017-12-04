@@ -2,14 +2,14 @@ package view;
 
 import java.awt.*;
 
-public class MyTile {
+public class Tile {
     private int value;
 
-    MyTile() {
+    Tile() {
         this(0);
     }
 
-    MyTile(int num) {
+    Tile(int num) {
         value = num;
     }
 
@@ -46,7 +46,7 @@ public class MyTile {
         this.value = value;
     }
 
-    static boolean compare(MyTile[] line1, MyTile[] line2) {
+    static boolean compare(Tile[] line1, Tile[] line2) {
         if (line1 == line2) {
             return true;
         } else if (line1.length != line2.length) {
