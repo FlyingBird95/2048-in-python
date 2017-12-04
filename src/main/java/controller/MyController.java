@@ -14,9 +14,6 @@ public class MyController extends Observable {
 
     // 0 = Up, 1 = Right, 2 = Down, 3 = Left
     protected final int[] allMoves = {0, 1, 2, 3};
-    protected final int[] horizontalMoves = {1, 3};
-    protected final int[] verticalMoves = {0, 2};
-    protected final int[] noMoves = {};
 
     public MyModel model;
 
@@ -89,7 +86,7 @@ public class MyController extends Observable {
         this.modelChanged();
     }
 
-    protected void doMove(){
+    private void doMove(){
         int[] line = new int[SIZE];
         for (int i = 0; i < SIZE; i++) {
             this.getLine(i, line);
@@ -134,12 +131,12 @@ public class MyController extends Observable {
         return output;
     }
 
-    public void PossibleMoves(){
+    public void possibleMoves(){
         if(!this.isFull()) {
             this.model.potentialMoves = this.allMoves.clone();
             return;
         }
-        // Calculate possible moves
+        // TODO: Calculate possible moves
     }
 
     private void addTile() {

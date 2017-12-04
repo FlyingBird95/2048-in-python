@@ -1,7 +1,6 @@
 package view;
 
 import controller.MyController;
-import model.MyModel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,8 +9,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Observable;
 import java.util.Observer;
-
-import static model.Model.SIZE;
 
 public class MyView extends JPanel implements Observer{
 
@@ -24,6 +21,9 @@ public class MyView extends JPanel implements Observer{
     private static final int WIDTH = 340;
     private static final int HEIGHT = 400;
 
+
+    private int size;
+
     private MyController controller;
 
     private boolean keyPressed = false;
@@ -32,14 +32,14 @@ public class MyView extends JPanel implements Observer{
      * Creates the view
      * @return the view for the game
      */
-    public static MyView createView(){
+    public static MyView createView(int size){
         JFrame game = new JFrame();
         game.setTitle(TITLE);
         game.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         game.setSize(MyView.WIDTH, MyView.HEIGHT);
         game.setResizable(false);
 
-        MyView view = new MyView();
+        MyView view = new MyView(size);
         game.add(view);
 
         game.setLocationRelativeTo(null);
@@ -51,8 +51,9 @@ public class MyView extends JPanel implements Observer{
     /**
      * The board is responsible for drawing the background and the score.
      */
-    private MyView() {
+    private MyView(int size) {
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
+        this.size = size;
         setFocusable(true);
     }
 
@@ -67,11 +68,9 @@ public class MyView extends JPanel implements Observer{
         g.setColor(BG_COLOR);
         g.fillRect(0, 0, this.getSize().width, this.getSize().height);
         if (this.controller.model != null) {
-
-            System.out.println("Drawing: ");
-            for (int x = 0; x < SIZE; x++) {
-                for (int y = 0; y < SIZE; y++) {
-                    drawTile(g, this.controller.model.values[y + x * SIZE], y, x);
+            for (int x = 0; x < size; x++) {
+                for (int y = 0; y < size; y++) {
+                    drawTile(g, this.controller.model.values[y + x * size], y, x);
                 }
             }
         }
@@ -91,7 +90,6 @@ public class MyView extends JPanel implements Observer{
         g.setFont(font);
 
         String s = String.valueOf(value);
-        System.out.print(s);
         final FontMetrics fm = getFontMetrics(font);
 
         final int w = fm.stringWidth(s);
