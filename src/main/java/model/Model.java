@@ -4,9 +4,6 @@ import org.deeplearning4j.rl4j.space.Encodable;
 
 import java.util.Arrays;
 
-/**
- * Created by T on 28-11-2017.
- */
 public class Model implements Encodable {
 
     public int[] values;

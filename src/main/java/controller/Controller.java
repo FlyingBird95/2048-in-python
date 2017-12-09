@@ -5,11 +5,7 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.*;
 
-/**
- * Created by Willem on 28-11-2017.
- */
 public class Controller extends Observable {
-
 
     /**
      * Define an enum with the available moves
@@ -21,17 +17,17 @@ public class Controller extends Observable {
     // class variables
     public Model model;
     private final int SIZE;
+    public boolean testMode = false;
 
     public Controller(Model m, int size){
         this.model = m;
         this.SIZE = size;
-        resetModel();
     }
 
     public void resetModel(){
         model.score = 0;
         model.win = false;
-        model.lose =false;
+        model.lose = false;
         this.model.values = new int[SIZE * SIZE];
 
         // The game starts with 2 tiles
@@ -65,6 +61,10 @@ public class Controller extends Observable {
         this.model.values = newTiles;
     }
 
+    private int tileAt(int x, int y) {
+        return this.model.values[x + y * SIZE];
+    }
+
     public void doMove(Move move) {
         switch (move){
             case UP:
@@ -87,7 +87,9 @@ public class Controller extends Observable {
                 break;
 
         }
-        this.addTile();
+        if(!this.testMode)
+            this.addTile();
+
         this.modelChanged();
     }
 
@@ -194,10 +196,6 @@ public class Controller extends Observable {
 
     private boolean contains(int value) {
         return ArrayUtils.contains(this.model.values, value);
-    }
-
-    private int tileAt(int x, int y) {
-        return this.model.values[x + y * SIZE];
     }
 
     /**
