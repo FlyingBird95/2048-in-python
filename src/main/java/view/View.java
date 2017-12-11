@@ -5,23 +5,19 @@ import model.Model;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.util.Observable;
-import java.util.Observer;
+import java.awt.event.*;
+import java.util.*;
 
 public class View extends JPanel implements Observer{
 
     private static final String TITLE = "2048 Game";
-    private static final Color BG_COLOR = new Color(0xbbada0);
     private static final String FONT_NAME = "Arial";
+    private static final Color BG_COLOR = new Color(0xbbada0);
     private static final int TILE_SIZE = 64;
     private static final int TILES_MARGIN = 16;
 
     private static final int WIDTH = 340;
     private static final int HEIGHT = 400;
-
 
     private int size;
     private Controller controller;
@@ -50,8 +46,9 @@ public class View extends JPanel implements Observer{
      * The board is responsible for drawing the background and the score.
      */
     private View(int size) {
-        setPreferredSize(new Dimension(WIDTH, HEIGHT));
         this.size = size;
+
+        setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setFocusable(true);
     }
 
@@ -84,9 +81,10 @@ public class View extends JPanel implements Observer{
     private void drawTile(Graphics2D g, int value, int x, int y) {
         int xOffset = offsetCoors(x);
         int yOffset = offsetCoors(y);
-        g.setColor(Tile.getBackground(value));
+
+        g.setColor(getBackground(value));
         g.fillRoundRect(xOffset, yOffset, TILE_SIZE, TILE_SIZE, 14, 14);
-        g.setColor(Tile.getForeground(value));
+        g.setColor(getForeground(value));
         final int size = value < 100 ? 36 : value < 1000 ? 32 : 24;
         final Font font = new Font(FONT_NAME, Font.BOLD, size);
         g.setFont(font);
@@ -99,6 +97,31 @@ public class View extends JPanel implements Observer{
 
         if (value != 0)
             g.drawString(s, xOffset + (TILE_SIZE - w) / 2, yOffset + TILE_SIZE - (TILE_SIZE - h) / 2 - 2);
+    }
+
+    private int offsetCoors(int arg) {
+        return arg * (TILES_MARGIN + TILE_SIZE) + TILES_MARGIN;
+    }
+
+    private Color getForeground(int value) {
+        return value < 16 ? new Color(0x776e65) :  new Color(0xf9f6f2);
+    }
+
+    private Color getBackground(int value) {
+        switch (value) {
+            case 2:    return new Color(0xeee4da);
+            case 4:    return new Color(0xede0c8);
+            case 8:    return new Color(0xf2b179);
+            case 16:   return new Color(0xf59563);
+            case 32:   return new Color(0xf67c5f);
+            case 64:   return new Color(0xf65e3b);
+            case 128:  return new Color(0xedcf72);
+            case 256:  return new Color(0xedcc61);
+            case 512:  return new Color(0xedc850);
+            case 1024: return new Color(0xedc53f);
+            case 2048: return new Color(0xedc22e);
+        }
+        return new Color(0xcdc1b4);
     }
 
     private void drawWinLose(Graphics2D g, boolean win, boolean lose){
@@ -123,10 +146,6 @@ public class View extends JPanel implements Observer{
     private void drawScore(Graphics2D g, int score){
         g.setFont(new Font(FONT_NAME, Font.PLAIN, 18));
         g.drawString("Score: " + score, 200, 365);
-    }
-
-    private static int offsetCoors(int arg) {
-        return arg * (TILES_MARGIN + TILE_SIZE) + TILES_MARGIN;
     }
 
     @Override
