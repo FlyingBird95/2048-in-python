@@ -14,7 +14,6 @@ public class Controller extends Observable {
             UP, RIGHT, DOWN, LEFT
     }
 
-    // class variables
     public Model model;
     private final int SIZE;
     public boolean testMode = false;
@@ -89,6 +88,9 @@ public class Controller extends Observable {
         }
         if(!this.testMode)
             this.addTile();
+
+        this.model.win = ArrayUtils.contains(this.model.values, 2048);
+//        this.model.lose = !this.canMove();
 
         this.modelChanged();
     }

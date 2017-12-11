@@ -1,5 +1,6 @@
 package model;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.deeplearning4j.rl4j.space.Encodable;
 
 import java.util.Arrays;

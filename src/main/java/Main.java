@@ -26,8 +26,7 @@ public class Main {
 
         view.setController(controller);
 
-        view.addKeyListener(view.getKeyListenerPressed());
-        view.addKeyListener(view.getKeyListenerReleased());
+        view.addKeyListener(view.getKeyListener());
 
 
         // Learning methods
