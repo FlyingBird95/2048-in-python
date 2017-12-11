@@ -1,3 +1,7 @@
+//import model.Model;
+//import view.View;
+
+import controller.Controller;
 import model.Model;
 import view.View;
 
@@ -11,18 +15,22 @@ public class Main {
      */
     public static void main(String[] args) {
 
-        /*
-         * EITHER USE THIS
-         */
-        View view = View.createView();
-        Model model = new Model();
-        model.addObserver(view);
-        model.modelChanged();
-        view.addKeyListener(model.getKeyListener());
+        int modelSize = 4;
+        Model model = new Model(modelSize);
+        Controller controller = new Controller(model, modelSize);
+        controller.resetModel();
 
-        /*
-         * OR THIS:
-         */
-        //new ControllerManager(SemiRandomController.class).start();
+        View view = View.createView(modelSize);
+        controller.addObserver(view);
+        controller.modelChanged();
+
+        view.setController(controller);
+
+        view.addKeyListener(view.getKeyListener());
+
+
+        // Learning methods
+        //Learning<Model, Integer, MoveSpace, IDQN> dql = new QLearningDiscreteDense<Model>(mdp, TOY_NET, TOY_QL, manager);
+
     }
 }
