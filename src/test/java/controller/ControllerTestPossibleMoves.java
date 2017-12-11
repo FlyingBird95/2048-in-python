@@ -1,6 +1,7 @@
 package controller;
 
 import model.Model;
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Test;
 
 import java.util.List;
@@ -82,12 +83,17 @@ public class ControllerTestPossibleMoves {
         Controller c = new Controller(m, 4);
 
         m.values = input;
-        List<Controller.Move> moveList = c.getPossibleMoves();
+//        List<Controller.Move> moveList = c.getPossibleMoves();
 
-        assertTrue(output.length == moveList.size());
+//        assertTrue(output.length == moveList.size());
+//        for(Controller.Move move : output){
+//            assertTrue(moveList.contains(move));
+//        }
+
+        Controller.Move[] moveList = c.getPossibleMoves();
+        assertTrue(output.length == moveList.length);
         for(Controller.Move move : output){
-            assertTrue(moveList.contains(move));
+            assertTrue(ArrayUtils.contains(moveList, move));
         }
     }
-
 }

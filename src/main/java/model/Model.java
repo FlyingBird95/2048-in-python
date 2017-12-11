@@ -1,22 +1,22 @@
 package model;
 
-import org.apache.commons.lang3.ArrayUtils;
+import controller.Controller;
 import org.deeplearning4j.rl4j.space.Encodable;
-
 import java.util.Arrays;
 
 public class Model implements Encodable {
 
+    public Controller.Move[] moveList;
     public int[] values;
-
-    public int[] potentialMoves;
     public int score;
-    public boolean win = false;
-    public boolean lose = false;
+    public boolean win;
+    public boolean lose;
 
     public Model(int size) {
         this.values = new int[size * size];
         this.score = 0;
+        this.win = false;
+        this.lose = false;
     }
 
     @Override

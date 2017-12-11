@@ -2,6 +2,7 @@ package view;
 
 import controller.Controller;
 import model.Model;
+import org.apache.commons.lang3.ArrayUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -174,29 +175,28 @@ public class View extends JPanel implements Observer{
                     controller.resetModel();
                 }
 
-                if (!controller.model.win && !controller.model.lose) {
-                    switch (e.getKeyCode()) {
-                        case KeyEvent.VK_LEFT:
-                            if (controller.checkMove(Controller.Move.LEFT)) {
-                                controller.doMove(Controller.Move.LEFT);
-                            }
-                            break;
-                        case KeyEvent.VK_RIGHT:
-                            if (controller.checkMove(Controller.Move.RIGHT)) {
-                                controller.doMove(Controller.Move.RIGHT);
-                            }
-                            break;
-                        case KeyEvent.VK_DOWN:
-                            if (controller.checkMove(Controller.Move.DOWN)) {
-                                controller.doMove(Controller.Move.DOWN);
-                            }
-                            break;
-                        case KeyEvent.VK_UP:
-                            if (controller.checkMove(Controller.Move.UP)) {
-                                controller.doMove(Controller.Move.UP);
-                            }
-                            break;
-                    }
+                Controller.Move[] moveList = controller.model.moveList;
+                switch (e.getKeyCode()) {
+                    case KeyEvent.VK_LEFT:
+                        if (ArrayUtils.contains(moveList, Controller.Move.LEFT)) {
+                            controller.doMove(Controller.Move.LEFT);
+                        }
+                        break;
+                    case KeyEvent.VK_RIGHT:
+                        if (ArrayUtils.contains(moveList, Controller.Move.RIGHT)) {
+                            controller.doMove(Controller.Move.RIGHT);
+                        }
+                        break;
+                    case KeyEvent.VK_DOWN:
+                        if (ArrayUtils.contains(moveList, Controller.Move.DOWN)) {
+                            controller.doMove(Controller.Move.DOWN);
+                        }
+                        break;
+                    case KeyEvent.VK_UP:
+                        if (ArrayUtils.contains(moveList, Controller.Move.UP)) {
+                            controller.doMove(Controller.Move.UP);
+                        }
+                        break;
                 }
                 System.out.println("possible moves: " + controller.getPossibleMoves());
             }

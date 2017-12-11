@@ -16,11 +16,12 @@ public class Controller extends Observable {
 
     public Model model;
     private final int SIZE;
-    public boolean testMode = false;
+    private boolean testMode;
 
     public Controller(Model m, int size){
         this.model = m;
         this.SIZE = size;
+        this.testMode = false;
     }
 
     public void resetModel(){
@@ -28,10 +29,15 @@ public class Controller extends Observable {
         model.win = false;
         model.lose = false;
         this.model.values = new int[SIZE * SIZE];
+        this.model.moveList = this.getPossibleMoves();
 
         // The game starts with 2 tiles
         this.addTile();
         this.addTile();
+    }
+
+    public void setTestMode(boolean testMode){
+        this.testMode = testMode;
     }
 
     /**
@@ -90,7 +96,9 @@ public class Controller extends Observable {
             this.addTile();
 
         this.model.win = ArrayUtils.contains(this.model.values, 2048);
-//        this.model.lose = !this.canMove();
+        this.model.lose = !this.canMove();
+
+        this.model.moveList = this.getPossibleMoves();
 
         this.modelChanged();
     }
@@ -104,15 +112,15 @@ public class Controller extends Observable {
         }
     }
 
-    protected void getLine(int index, int[] output) {
+    private void getLine(int index, int[] output) {
         System.arraycopy(this.model.values, index * SIZE, output, 0, SIZE);
     }
 
-    protected void setLine(int index, int[] input) {
+    private void setLine(int index, int[] input) {
         System.arraycopy(input, 0, this.model.values, index * SIZE, SIZE);
     }
 
-    protected int mergeLine(int[] line) {
+    private int mergeLine(int[] line) {
         int[] list = this.trimLine(line);
         Arrays.fill(line, 0);
 
@@ -123,6 +131,7 @@ public class Controller extends Observable {
 
             if(i < (SIZE - 1) && current == list[i + 1]){
                 current *= 2;
+                score += current;
                 i++;
             }
             line[move++] = current;
@@ -130,50 +139,13 @@ public class Controller extends Observable {
         return score;
     }
 
-    protected int[] trimLine(int[] line){
+    private int[] trimLine(int[] line){
         int[] output = new int[SIZE];
         int counter = 0;
         for (int i = 0; i < SIZE; i++)
             if (line[i] != 0)
                 output[counter++] = line[i];
         return output;
-    }
-
-    /**
-     * The method works by first doing the move, and then see if the values
-     * in the model are changed
-     * @return a list of enum-Move with the possible moves.
-     */
-    public List<Move> getPossibleMoves(){
-        List<Move> possibleMoves = new ArrayList<>();
-
-        for(Move move : Move.values()){
-            if (checkMove(move)){
-                possibleMoves.add(move);
-            }
-        }
-
-        return possibleMoves;
-    }
-
-    /**
-     * Checks if a certain move can be done
-     * @param move the move to be checked
-     * @return true if the move can be done, false otherwise
-     */
-    public boolean checkMove(Move move){
-        boolean answer = false;
-
-        // keep a copy to return to the previous move
-        int[] copy = ArrayUtils.clone(model.values);
-
-        doMove(move);
-        if (!Arrays.equals(copy, model.values)){
-            answer = true;
-        }
-        // reset the values
-        model.values = ArrayUtils.clone(copy);
-        return answer;
     }
 
     private void addTile() {
@@ -192,6 +164,36 @@ public class Controller extends Observable {
         this.model.values[resultingIndices[rnd]] = Math.random() < 0.9 ? 2 : 4;
     }
 
+    public Move[] getPossibleMoves(){
+        if(!this.isFull())
+            return new Move[]{Move.LEFT, Move.RIGHT, Move.UP, Move.DOWN};
+
+        boolean horizontal = isMovePossible();
+        this.rotate(90);
+        boolean vertical = isMovePossible();
+        this.rotate(270);
+
+        if(vertical && horizontal)
+            return new Move[]{Move.LEFT, Move.RIGHT, Move.UP, Move.DOWN};
+        if(vertical)
+            return new Move[]{Move.UP, Move.DOWN};
+        if(horizontal)
+            return new Move[]{Move.LEFT, Move.RIGHT};
+
+        return new Move[]{};
+    }
+
+    private boolean isMovePossible(){
+        int[] line = new int[SIZE];
+        for (int i = 0; i < SIZE; i++) {
+            this.getLine(i, line);
+            for(int j = 0; j < SIZE - 1; j++)
+                if(line[j] == line[j + 1])
+                    return true;
+        }
+        return false;
+    }
+
     private boolean isFull() {
         return !this.contains(0);
     }
@@ -205,7 +207,7 @@ public class Controller extends Observable {
      * @return
      */
     public boolean canMove() {
-        return getPossibleMoves().size() > 0;
+        return getPossibleMoves().length > 0;
     }
 
     public void modelChanged() {

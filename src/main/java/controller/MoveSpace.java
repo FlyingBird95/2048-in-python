@@ -5,13 +5,10 @@ import java.util.Random;
 import model.Model;
 import org.deeplearning4j.rl4j.space.ActionSpace;
 
-/**
- * Created by T on 28-11-2017.
- */
-public class MoveSpace implements ActionSpace<Integer>{
+public class MoveSpace implements ActionSpace<Controller.Move>{
 
-    protected Random random;
-    protected Model model;
+    private Random random;
+    private Model model;
 
     public MoveSpace(Model model){
         this.model = model;
@@ -19,8 +16,9 @@ public class MoveSpace implements ActionSpace<Integer>{
     }
 
     @Override
-    public Integer randomAction() {
-        return this.random.nextInt(this.getSize());
+    public Controller.Move randomAction() {
+//        return this.random.nextInt(this.getSize());
+        return null;
     }
 
     @Override
@@ -29,18 +27,20 @@ public class MoveSpace implements ActionSpace<Integer>{
     }
 
     @Override
-    public Object encode(Integer integer) {
-        return this.model.potentialMoves[integer];
+    public Object encode(Controller.Move move) {
+        //        return this.model.potentialMoves[integer];
+        return null;
     }
 
     @Override
     public int getSize() {
-        return this.model.potentialMoves.length;
+//        return this.model.potentialMoves.length;
+        return -1;
     }
 
     @Override
-    public Integer noOp() {
+    public Controller.Move noOp() {
         //This statement should never be reached, i think !!!
-        return -1;
+        return null;
     }
 }
