@@ -26,7 +26,7 @@ public class Model implements Encodable {
 
     @Override
     public double[] toArray() {
-        // TODO: implement method
-        return new double[0];
+        // Convert model to double array
+        return Arrays.stream(this.values).asDoubleStream().toArray();
     }
 }
