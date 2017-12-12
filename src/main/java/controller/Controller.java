@@ -142,15 +142,18 @@ public class Controller extends Observable {
     private int[] trimLine(int[] line){
         int[] output = new int[SIZE];
         int counter = 0;
-        for (int i = 0; i < SIZE; i++)
-            if (line[i] != 0)
+        for (int i = 0; i < SIZE; i++) {
+            if (line[i] != 0) {
                 output[counter++] = line[i];
+            }
+        }
         return output;
     }
 
     private void addTile() {
-        if(this.isFull())
+        if(this.isFull()) {
             return;
+        }
 
         int count = 0;
         int[] resultingIndices = new int[this.model.values.length];
@@ -165,20 +168,24 @@ public class Controller extends Observable {
     }
 
     public Move[] getPossibleMoves(){
-        if(!this.isFull())
+        if(!this.isFull()) {
             return new Move[]{Move.LEFT, Move.RIGHT, Move.UP, Move.DOWN};
+        }
 
         boolean horizontal = isMovePossible();
         this.rotate(90);
         boolean vertical = isMovePossible();
         this.rotate(270);
 
-        if(vertical && horizontal)
+        if(vertical && horizontal) {
             return new Move[]{Move.LEFT, Move.RIGHT, Move.UP, Move.DOWN};
-        if(vertical)
+        }
+        if(vertical) {
             return new Move[]{Move.UP, Move.DOWN};
-        if(horizontal)
+        }
+        if(horizontal) {
             return new Move[]{Move.LEFT, Move.RIGHT};
+        }
 
         return new Move[]{};
     }
@@ -187,9 +194,11 @@ public class Controller extends Observable {
         int[] line = new int[SIZE];
         for (int i = 0; i < SIZE; i++) {
             this.getLine(i, line);
-            for(int j = 0; j < SIZE - 1; j++)
-                if(line[j] == line[j + 1])
+            for(int j = 0; j < SIZE - 1; j++) {
+                if (line[j] == line[j + 1]) {
                     return true;
+                }
+            }
         }
         return false;
     }
