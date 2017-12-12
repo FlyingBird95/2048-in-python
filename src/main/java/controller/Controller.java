@@ -14,6 +14,16 @@ public class Controller extends Observable {
             UP, RIGHT, DOWN, LEFT
     }
 
+    public static Move getMove(Integer integer){
+        switch (integer){
+            case 0: return Move.UP;
+            case 1: return Move.RIGHT;
+            case 2: return Move.DOWN;
+            case 3: return Move.LEFT;
+            default: throw new IllegalArgumentException("Given value must be between 0-3");
+        }
+    }
+
     public Model model;
     private final int SIZE;
     private boolean testMode;
