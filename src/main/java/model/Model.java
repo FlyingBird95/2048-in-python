@@ -8,13 +8,15 @@ public class Model implements Encodable {
 
     public Controller.Move[] moveList;
     public int[] values;
-    public int score;
+    public int totalScore;
+    public int previousReward;
     public boolean win;
     public boolean lose;
 
     public Model(int size) {
         this.values = new int[size * size];
-        this.score = 0;
+        this.totalScore = 0;
+        this.previousReward = 0;
         this.win = false;
         this.lose = false;
     }

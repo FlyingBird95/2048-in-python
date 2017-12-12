@@ -25,7 +25,7 @@ public class Controller extends Observable {
     }
 
     public void resetModel(){
-        model.score = 0;
+        model.totalScore = 0;
         model.win = false;
         model.lose = false;
         this.model.values = new int[SIZE * SIZE];
@@ -97,7 +97,6 @@ public class Controller extends Observable {
 
         this.model.win = ArrayUtils.contains(this.model.values, 2048);
         this.model.lose = !this.canMove();
-
         this.model.moveList = this.getPossibleMoves();
 
         this.modelChanged();
@@ -105,11 +104,13 @@ public class Controller extends Observable {
 
     private void doMove(){
         int[] line = new int[SIZE];
+        this.model.previousReward = 0;
         for (int i = 0; i < SIZE; i++) {
             this.getLine(i, line);
-            this.model.score += this.mergeLine(line);
+            this.model.previousReward += this.mergeLine(line);
             this.setLine(i, line);
         }
+        this.model.totalScore += this.model.previousReward;
     }
 
     private void getLine(int index, int[] output) {

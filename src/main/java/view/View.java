@@ -44,7 +44,7 @@ public class View extends JPanel implements Observer{
     }
 
     /**
-     * The board is responsible for drawing the background and the score.
+     * The board is responsible for drawing the background and the totalScore.
      */
     private View(int size) {
         this.size = size;
@@ -67,7 +67,7 @@ public class View extends JPanel implements Observer{
         if(model != null){
             this.drawTiles((Graphics2D) g, model.values, this.size);
             this.drawWinLose((Graphics2D) g, model.win, model.lose);
-            this.drawScore((Graphics2D) g, model.score);
+            this.drawScore((Graphics2D) g, model.totalScore);
         }
     }
 
