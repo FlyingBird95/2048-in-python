@@ -131,8 +131,8 @@ public class ControllerTestDoMove {
     }
 
     private void moveTest(int[] input, int[] output, Util.Move move) throws  Exception {
-        Model m = new Model(4);
-        Controller c = new Controller(m, 4);
+        Model m = new Model();
+        Controller c = new Controller(m);
         c.setTestMode(true);
 
         m.values = input.clone();

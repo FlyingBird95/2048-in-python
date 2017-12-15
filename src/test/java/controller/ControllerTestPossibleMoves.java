@@ -79,8 +79,8 @@ public class ControllerTestPossibleMoves {
     }
 
     private void available(int[] input, Util.Move[] output) throws Exception {
-        Model m = new Model(4);
-        Controller c = new Controller(m, 4);
+        Model m = new Model();
+        Controller c = new Controller(m);
 
         m.values = input;
 //        List<Controller.Move> moveList = c.getPossibleMoves();

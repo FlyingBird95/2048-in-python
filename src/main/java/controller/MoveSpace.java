@@ -1,10 +1,8 @@
 package controller;
 
-import java.util.Random;
-
-import model.Model;
-import org.deeplearning4j.rl4j.space.ActionSpace;
 import org.deeplearning4j.rl4j.space.DiscreteSpace;
+
+import java.util.Random;
 
 public class MoveSpace extends DiscreteSpace{
 
@@ -19,6 +17,7 @@ public class MoveSpace extends DiscreteSpace{
 
     @Override
     public Integer randomAction() {
+        // Choose an integer from list of possible moves
         int[] moves = Util.toIntArray(controller.getPossibleMoves());
         int index = this.random.nextInt(moves.length);
         return moves[index];
@@ -36,7 +35,7 @@ public class MoveSpace extends DiscreteSpace{
 
     @Override
     public int getSize() {
-        return this.controller.model.moveList.length;
+        return controller.getPossibleMoves().length;
     }
 
     @Override
