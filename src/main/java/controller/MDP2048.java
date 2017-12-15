@@ -12,12 +12,12 @@ import org.nd4j.linalg.factory.Nd4j;
 public class MDP2048 implements MDP<Model, Integer, DiscreteSpace>{
 
     private Controller controller;
-    private DiscreteSpace actionSpace;
+    private MoveSpace actionSpace;
     private ObservationSpace<Model> observationSpace;
 
     public MDP2048(Controller controller){
         this.controller = controller;
-        this.actionSpace = new DiscreteSpace(this.controller.model.moveList.length);
+        this.actionSpace = new MoveSpace(this.controller);
         this.observationSpace = new ObservationSpace<Model>() {
             @Override
             public String getName() {

@@ -4,21 +4,24 @@ import java.util.Random;
 
 import model.Model;
 import org.deeplearning4j.rl4j.space.ActionSpace;
+import org.deeplearning4j.rl4j.space.DiscreteSpace;
 
-public class MoveSpace implements ActionSpace<Controller.Move>{
+public class MoveSpace extends DiscreteSpace{
 
     private Random random;
-    private Model model;
+    private Controller controller;
 
-    public MoveSpace(Model model){
-        this.model = model;
+    public MoveSpace(Controller controller){
+        super(Controller.Move.values().length);
+        this.controller = controller;
         this.random = new Random();
     }
 
     @Override
-    public Controller.Move randomAction() {
-        int index = this.random.nextInt(this.getSize());
-        return this.model.moveList[index];
+    public Integer randomAction() {
+        int[] moves = Controller.toIntArray(controller.getPossibleMoves());
+        int index = this.random.nextInt(moves.length);
+        return moves[index];
     }
 
     @Override
@@ -27,18 +30,18 @@ public class MoveSpace implements ActionSpace<Controller.Move>{
     }
 
     @Override
-    public Object encode(Controller.Move move) {
-        return move;
+    public Object encode(Integer integer) {
+        return integer;
     }
 
     @Override
     public int getSize() {
-        return this.model.moveList.length;
+        return this.controller.model.moveList.length;
     }
 
     @Override
-    public Controller.Move noOp() {
+    public Integer noOp() {
         //This statement should never be reached, i think !!!
-        return null;
+        throw new IllegalArgumentException("Shouldn't call this method");
     }
 }

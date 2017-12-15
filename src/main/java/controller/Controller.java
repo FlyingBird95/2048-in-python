@@ -24,6 +24,24 @@ public class Controller extends Observable {
         }
     }
 
+    public static int moveToInt(Move move){
+        switch (move){
+            case UP: return 0;
+            case RIGHT: return 1;
+            case DOWN: return 2;
+            case LEFT: return 3;
+            default: throw new IllegalArgumentException("Given move is invalid");
+        }
+    }
+
+    public static int[] toIntArray(Move[] moves){
+        int[] array = new int[moves.length];
+        for(int i=0; i<moves.length; i++){
+            array[i] = moveToInt(moves[i]);
+        }
+        return array;
+    }
+
     public Model model;
     private final int SIZE;
     private boolean testMode;
