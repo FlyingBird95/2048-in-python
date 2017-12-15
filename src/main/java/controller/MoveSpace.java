@@ -17,8 +17,8 @@ public class MoveSpace implements ActionSpace<Controller.Move>{
 
     @Override
     public Controller.Move randomAction() {
-//        return this.random.nextInt(this.getSize());
-        return null;
+        int index = this.random.nextInt(this.getSize());
+        return this.model.moveList[index];
     }
 
     @Override
@@ -28,14 +28,12 @@ public class MoveSpace implements ActionSpace<Controller.Move>{
 
     @Override
     public Object encode(Controller.Move move) {
-        //        return this.model.potentialMoves[integer];
-        return null;
+        return move;
     }
 
     @Override
     public int getSize() {
-//        return this.model.potentialMoves.length;
-        return -1;
+        return this.model.moveList.length;
     }
 
     @Override

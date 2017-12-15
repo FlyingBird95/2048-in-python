@@ -44,6 +44,8 @@ public class Controller extends Observable {
         // The game starts with 2 tiles
         this.addTile();
         this.addTile();
+
+        this.modelChanged();
     }
 
     public void setTestMode(boolean testMode){
