@@ -1,5 +1,6 @@
 package view;
 
+import Util.MoveUtil;
 import controller.Controller;
 import model.Model;
 import org.apache.commons.lang3.ArrayUtils;
@@ -20,7 +21,6 @@ public class View extends JPanel implements Observer{
     private static final int WIDTH = 340;
     private static final int HEIGHT = 400;
 
-    private int size;
     private Controller controller;
     private boolean keyPressed = false;
 
@@ -28,14 +28,14 @@ public class View extends JPanel implements Observer{
      * Creates the view
      * @return the view for the game
      */
-    public static View createView(int size){
+    public static View createView(){
         JFrame game = new JFrame();
         game.setTitle(TITLE);
         game.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         game.setSize(View.WIDTH, View.HEIGHT);
         game.setResizable(false);
 
-        View view = new View(size);
+        View view = new View();
         game.add(view);
 
         game.setLocationRelativeTo(null);
@@ -46,9 +46,7 @@ public class View extends JPanel implements Observer{
     /**
      * The board is responsible for drawing the background and the totalScore.
      */
-    private View(int size) {
-        this.size = size;
-
+    private View() {
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setFocusable(true);
     }
@@ -65,7 +63,7 @@ public class View extends JPanel implements Observer{
 
         Model model = this.controller.model;
         if(model != null){
-            this.drawTiles((Graphics2D) g, model.values, this.size);
+            this.drawTiles((Graphics2D) g, model.values, Model.SIZE);
             this.drawWinLose((Graphics2D) g, model.win, model.lose);
             this.drawScore((Graphics2D) g, model.totalScore);
         }
@@ -175,30 +173,29 @@ public class View extends JPanel implements Observer{
                     controller.resetModel();
                 }
 
-                Controller.Move[] moveList = controller.model.moveList;
+                MoveUtil.Move[] moveList = controller.model.moveList;
                 switch (e.getKeyCode()) {
                     case KeyEvent.VK_LEFT:
-                        if (ArrayUtils.contains(moveList, Controller.Move.LEFT)) {
-                            controller.doMove(Controller.Move.LEFT);
+                        if (ArrayUtils.contains(moveList, MoveUtil.Move.LEFT)) {
+                            controller.doMove(MoveUtil.Move.LEFT);
                         }
                         break;
                     case KeyEvent.VK_RIGHT:
-                        if (ArrayUtils.contains(moveList, Controller.Move.RIGHT)) {
-                            controller.doMove(Controller.Move.RIGHT);
+                        if (ArrayUtils.contains(moveList, MoveUtil.Move.RIGHT)) {
+                            controller.doMove(MoveUtil.Move.RIGHT);
                         }
                         break;
                     case KeyEvent.VK_DOWN:
-                        if (ArrayUtils.contains(moveList, Controller.Move.DOWN)) {
-                            controller.doMove(Controller.Move.DOWN);
+                        if (ArrayUtils.contains(moveList, MoveUtil.Move.DOWN)) {
+                            controller.doMove(MoveUtil.Move.DOWN);
                         }
                         break;
                     case KeyEvent.VK_UP:
-                        if (ArrayUtils.contains(moveList, Controller.Move.UP)) {
-                            controller.doMove(Controller.Move.UP);
+                        if (ArrayUtils.contains(moveList, MoveUtil.Move.UP)) {
+                            controller.doMove(MoveUtil.Move.UP);
                         }
                         break;
                 }
-                System.out.println("possible moves: " + controller.getPossibleMoves());
             }
             @Override
             public void keyReleased(KeyEvent e) {

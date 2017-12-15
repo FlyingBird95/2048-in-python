@@ -1,10 +1,9 @@
 package controller;
 
+import Util.MoveUtil;
 import model.Model;
 import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Test;
-
-import java.util.List;
 
 import static org.junit.Assert.assertTrue;
 
@@ -17,11 +16,11 @@ public class ControllerTestPossibleMoves {
                 0, 0, 0, 0,
                 0, 0, 0, 0,
                 0, 0, 0, 0
-        }, new Controller.Move[]{
-                Controller.Move.DOWN,
-                Controller.Move.UP,
-                Controller.Move.LEFT,
-                Controller.Move.RIGHT
+        }, new MoveUtil.Move[]{
+                MoveUtil.Move.DOWN,
+                MoveUtil.Move.UP,
+                MoveUtil.Move.LEFT,
+                MoveUtil.Move.RIGHT
         });
     }
 
@@ -32,9 +31,9 @@ public class ControllerTestPossibleMoves {
                 4, 4, 4, 4,
                 2, 2, 2, 2,
                 4, 4, 4, 4
-        }, new Controller.Move[]{
-                Controller.Move.LEFT,
-                Controller.Move.RIGHT
+        }, new MoveUtil.Move[]{
+                MoveUtil.Move.LEFT,
+                MoveUtil.Move.RIGHT
         });
     }
 
@@ -45,9 +44,9 @@ public class ControllerTestPossibleMoves {
                 8, 4, 8, 4,
                 4, 8, 4, 8,
                 8, 4, 8, 4
-        }, new Controller.Move[]{
-                Controller.Move.LEFT,
-                Controller.Move.RIGHT
+        }, new MoveUtil.Move[]{
+                MoveUtil.Move.LEFT,
+                MoveUtil.Move.RIGHT
         });
     }
 
@@ -58,11 +57,11 @@ public class ControllerTestPossibleMoves {
                 2, 4, 2, 4,
                 4, 2, 4, 2,
                 2, 4, 2, 0
-        }, new Controller.Move[]{
-                Controller.Move.DOWN,
-                Controller.Move.UP,
-                Controller.Move.LEFT,
-                Controller.Move.RIGHT
+        }, new MoveUtil.Move[]{
+                MoveUtil.Move.DOWN,
+                MoveUtil.Move.UP,
+                MoveUtil.Move.LEFT,
+                MoveUtil.Move.RIGHT
         });
     }
 
@@ -73,14 +72,14 @@ public class ControllerTestPossibleMoves {
                 2, 4, 2, 4,
                 4, 2, 4, 2,
                 2, 4, 2, 4
-        }, new Controller.Move[]{
+        }, new MoveUtil.Move[]{
                 // No moves
         });
     }
 
-    private void available(int[] input, Controller.Move[] output) throws Exception {
-        Model m = new Model(4);
-        Controller c = new Controller(m, 4);
+    private void available(int[] input, MoveUtil.Move[] output) throws Exception {
+        Model m = new Model();
+        Controller c = new Controller(m);
 
         m.values = input;
 //        List<Controller.Move> moveList = c.getPossibleMoves();
@@ -90,9 +89,9 @@ public class ControllerTestPossibleMoves {
 //            assertTrue(moveList.contains(move));
 //        }
 
-        Controller.Move[] moveList = c.getPossibleMoves();
+        MoveUtil.Move[] moveList = c.getPossibleMoves();
         assertTrue(output.length == moveList.length);
-        for(Controller.Move move : output){
+        for(MoveUtil.Move move : output){
             assertTrue(ArrayUtils.contains(moveList, move));
         }
     }

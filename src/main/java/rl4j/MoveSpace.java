@@ -1,45 +1,35 @@
 package rl4j;
 
-import java.util.Random;
+import Util.MoveUtil;
+import org.deeplearning4j.rl4j.space.DiscreteSpace;
 
 import controller.Controller;
-import model.Model;
-import org.deeplearning4j.rl4j.space.ActionSpace;
 
-public class MoveSpace implements ActionSpace<Controller.Move>{
 
-    private Random random;
-    private Model model;
+public class MoveSpace extends DiscreteSpace{
 
-    public MoveSpace(Model model){
-        this.model = model;
-        this.random = new Random();
+    private Controller controller;
+
+    public MoveSpace(Controller controller){
+        super(MoveUtil.Move.values().length);
+        this.controller = controller;
     }
 
     @Override
-    public Controller.Move randomAction() {
-        int index = this.random.nextInt(this.getSize());
-        return this.model.moveList[index];
-    }
-
-    @Override
-    public void setSeed(int seed) {
-        this.random = new Random(seed);
-    }
-
-    @Override
-    public Object encode(Controller.Move move) {
-        return move;
+    public Integer randomAction() {
+        // Choose an integer from list of possible moves
+        int[] moves = MoveUtil.toIntArray(controller.getPossibleMoves());
+        int index = this.rd.nextInt(moves.length);
+        return moves[index];
     }
 
     @Override
     public int getSize() {
-        return this.model.moveList.length;
+        return controller.model.moveList.length;
     }
 
     @Override
-    public Controller.Move noOp() {
-        //This statement should never be reached, i think !!!
-        return null;
+    public Integer noOp() {
+        throw new IllegalArgumentException("Shouldn't call this method");
     }
 }

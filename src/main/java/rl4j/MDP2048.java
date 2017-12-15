@@ -1,5 +1,6 @@
 package rl4j;
 
+import Util.MoveUtil;
 import controller.Controller;
 import model.Model;
 import org.deeplearning4j.gym.StepReply;
@@ -11,13 +12,13 @@ import org.json.JSONObject;
 public class MDP2048 implements MDP<Model, Integer, DiscreteSpace>{
 
     private Controller controller;
-    private DiscreteSpace actionSpace;
+    private MoveSpace moveSpace;
     private ObservationSpace<Model> observationSpace;
 
     public MDP2048(Controller controller){
         this.controller = controller;
-        this.actionSpace = new DiscreteSpace(this.controller.model.moveList.length);
         this.observationSpace = new ObservationSpace2048(this.controller.model);
+        this.moveSpace = new MoveSpace(this.controller);
     }
 
     @Override
@@ -27,7 +28,7 @@ public class MDP2048 implements MDP<Model, Integer, DiscreteSpace>{
 
     @Override
     public DiscreteSpace getActionSpace() {
-        return this.actionSpace;
+        return this.moveSpace;
     }
 
     @Override
@@ -42,7 +43,7 @@ public class MDP2048 implements MDP<Model, Integer, DiscreteSpace>{
 
     @Override
     public StepReply<Model> step(Integer integer) {
-        Controller.Move move = Controller.getMove(integer);
+        MoveUtil.Move move = MoveUtil.getMove(integer);
         controller.doMove(move);
         return new StepReply<>(
                 this.controller.model,
@@ -58,7 +59,7 @@ public class MDP2048 implements MDP<Model, Integer, DiscreteSpace>{
     }
 
     @Override
-    public MDP<Model, Integer, DiscreteSpace> newInstance() {
+    public MDP2048 newInstance() {
         return new MDP2048(this.controller);
     }
 }

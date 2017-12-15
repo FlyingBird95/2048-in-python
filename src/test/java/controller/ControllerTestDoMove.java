@@ -1,5 +1,6 @@
 package controller;
 
+import Util.MoveUtil;
 import model.Model;
 import org.junit.Test;
 
@@ -120,19 +121,19 @@ public class ControllerTestDoMove {
     }
 
     private void allMoveTest(int[] input, int[] outputD, int[] outputL, int[] outputR, int[] outputU) throws  Exception{
-        moveTest(input, outputD, Controller.Move.DOWN);
-        moveTest(input, outputL, Controller.Move.LEFT);
-        moveTest(input, outputR, Controller.Move.RIGHT);
-        moveTest(input, outputU, Controller.Move.UP);
+        moveTest(input, outputD, MoveUtil.Move.DOWN);
+        moveTest(input, outputL, MoveUtil.Move.LEFT);
+        moveTest(input, outputR, MoveUtil.Move.RIGHT);
+        moveTest(input, outputU, MoveUtil.Move.UP);
     }
 
     private void allMoveTest(int[] input, int[] output) throws  Exception {
         allMoveTest(input, output, output, output, output);
     }
 
-    private void moveTest(int[] input, int[] output, Controller.Move move) throws  Exception {
-        Model m = new Model(4);
-        Controller c = new Controller(m, 4);
+    private void moveTest(int[] input, int[] output, MoveUtil.Move move) throws  Exception {
+        Model m = new Model();
+        Controller c = new Controller(m);
         c.setTestMode(true);
 
         m.values = input.clone();

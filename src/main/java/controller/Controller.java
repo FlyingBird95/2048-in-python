@@ -1,5 +1,6 @@
 package controller;
 
+import Util.MoveUtil;
 import model.Model;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -7,30 +8,11 @@ import java.util.*;
 
 public class Controller extends Observable {
 
-    /**
-     * Define an enum with the available moves
-     */
-    public enum Move {
-            UP, RIGHT, DOWN, LEFT
-    }
-
-    public static Move getMove(Integer integer){
-        switch (integer){
-            case 0: return Move.UP;
-            case 1: return Move.RIGHT;
-            case 2: return Move.DOWN;
-            case 3: return Move.LEFT;
-            default: throw new IllegalArgumentException("Given value must be between 0-3");
-        }
-    }
-
     public Model model;
-    private final int SIZE;
     private boolean testMode;
 
-    public Controller(Model m, int size){
+    public Controller(Model m){
         this.model = m;
-        this.SIZE = size;
         this.testMode = false;
     }
 
@@ -38,7 +20,7 @@ public class Controller extends Observable {
         model.totalScore = 0;
         model.win = false;
         model.lose = false;
-        this.model.values = new int[SIZE * SIZE];
+        this.model.values = new int[Model.SIZE * Model.SIZE];
         this.model.moveList = this.getPossibleMoves();
 
         // The game starts with 2 tiles
@@ -57,8 +39,8 @@ public class Controller extends Observable {
      * @param angle the angle in degrees
      */
     private void rotate(int angle) {
-        int[] newTiles = new int[SIZE * SIZE];
-        int offsetX = SIZE - 1, offsetY = SIZE - 1;
+        int[] newTiles = new int[Model.SIZE * Model.SIZE];
+        int offsetX = Model.SIZE - 1, offsetY = Model.SIZE - 1;
         if (angle == 90) {
             offsetY = 0;
         } else if (angle == 270) {
@@ -68,21 +50,21 @@ public class Controller extends Observable {
         double rad = Math.toRadians(angle);
         int cos = (int) Math.cos(rad);
         int sin = (int) Math.sin(rad);
-        for (int x = 0; x < SIZE; x++) {
-            for (int y = 0; y < SIZE; y++) {
+        for (int x = 0; x < Model.SIZE; x++) {
+            for (int y = 0; y < Model.SIZE; y++) {
                 int newX = (x * cos) - (y * sin) + offsetX;
                 int newY = (x * sin) + (y * cos) + offsetY;
-                newTiles[(newX) + (newY) * SIZE] = tileAt(x, y);
+                newTiles[(newX) + (newY) * Model.SIZE] = tileAt(x, y);
             }
         }
         this.model.values = newTiles;
     }
 
     private int tileAt(int x, int y) {
-        return this.model.values[x + y * SIZE];
+        return this.model.values[x + y * Model.SIZE];
     }
 
-    public void doMove(Move move) {
+    public void doMove(MoveUtil.Move move) {
         switch (move){
             case UP:
                 this.rotate(270);
@@ -115,9 +97,9 @@ public class Controller extends Observable {
     }
 
     private void doMove(){
-        int[] line = new int[SIZE];
+        int[] line = new int[Model.SIZE];
         this.model.previousReward = 0;
-        for (int i = 0; i < SIZE; i++) {
+        for (int i = 0; i < Model.SIZE; i++) {
             this.getLine(i, line);
             this.model.previousReward += this.mergeLine(line);
             this.setLine(i, line);
@@ -126,11 +108,11 @@ public class Controller extends Observable {
     }
 
     private void getLine(int index, int[] output) {
-        System.arraycopy(this.model.values, index * SIZE, output, 0, SIZE);
+        System.arraycopy(this.model.values, index * Model.SIZE, output, 0, Model.SIZE);
     }
 
     private void setLine(int index, int[] input) {
-        System.arraycopy(input, 0, this.model.values, index * SIZE, SIZE);
+        System.arraycopy(input, 0, this.model.values, index * Model.SIZE, Model.SIZE);
     }
 
     private int mergeLine(int[] line) {
@@ -139,10 +121,10 @@ public class Controller extends Observable {
 
         int move = 0;
         int score = 0;
-        for (int i = 0; i < SIZE && list[i] != 0; i++) {
+        for (int i = 0; i < Model.SIZE && list[i] != 0; i++) {
             int current = list[i];
 
-            if(i < (SIZE - 1) && current == list[i + 1]){
+            if(i < (Model.SIZE - 1) && current == list[i + 1]){
                 current *= 2;
                 score += current;
                 i++;
@@ -153,9 +135,9 @@ public class Controller extends Observable {
     }
 
     private int[] trimLine(int[] line){
-        int[] output = new int[SIZE];
+        int[] output = new int[Model.SIZE];
         int counter = 0;
-        for (int i = 0; i < SIZE; i++) {
+        for (int i = 0; i < Model.SIZE; i++) {
             if (line[i] != 0) {
                 output[counter++] = line[i];
             }
@@ -180,9 +162,9 @@ public class Controller extends Observable {
         this.model.values[resultingIndices[rnd]] = Math.random() < 0.9 ? 2 : 4;
     }
 
-    public Move[] getPossibleMoves(){
+    public MoveUtil.Move[] getPossibleMoves(){
         if(!this.isFull()) {
-            return new Move[]{Move.LEFT, Move.RIGHT, Move.UP, Move.DOWN};
+            return new MoveUtil.Move[]{MoveUtil.Move.LEFT, MoveUtil.Move.RIGHT, MoveUtil.Move.UP, MoveUtil.Move.DOWN};
         }
 
         boolean horizontal = isMovePossible();
@@ -191,23 +173,23 @@ public class Controller extends Observable {
         this.rotate(270);
 
         if(vertical && horizontal) {
-            return new Move[]{Move.LEFT, Move.RIGHT, Move.UP, Move.DOWN};
+            return new MoveUtil.Move[]{MoveUtil.Move.LEFT, MoveUtil.Move.RIGHT, MoveUtil.Move.UP, MoveUtil.Move.DOWN};
         }
         if(vertical) {
-            return new Move[]{Move.UP, Move.DOWN};
+            return new MoveUtil.Move[]{MoveUtil.Move.UP, MoveUtil.Move.DOWN};
         }
         if(horizontal) {
-            return new Move[]{Move.LEFT, Move.RIGHT};
+            return new MoveUtil.Move[]{MoveUtil.Move.LEFT, MoveUtil.Move.RIGHT};
         }
 
-        return new Move[]{};
+        return new MoveUtil.Move[]{};
     }
 
     private boolean isMovePossible(){
-        int[] line = new int[SIZE];
-        for (int i = 0; i < SIZE; i++) {
+        int[] line = new int[Model.SIZE];
+        for (int i = 0; i < Model.SIZE; i++) {
             this.getLine(i, line);
-            for(int j = 0; j < SIZE - 1; j++) {
+            for(int j = 0; j < Model.SIZE - 1; j++) {
                 if (line[j] == line[j + 1]) {
                     return true;
                 }

@@ -1,6 +1,3 @@
-//import model.Model;
-//import view.View;
-
 import controller.Controller;
 import rl4j.MDP2048;
 import model.Model;
@@ -23,27 +20,24 @@ public class Main {
      */
     public static void main(String[] args) throws Exception{
 
-        int modelSize = 4;
-        Model model = new Model(modelSize);
-        Controller controller = new Controller(model, modelSize);
+        Model model = new Model();
+        Controller controller = new Controller(model);
         controller.resetModel();
 
-        View view = View.createView(modelSize);
+        View view = View.createView();
         controller.addObserver(view);
         controller.modelChanged();
 
         view.setController(controller);
-
         view.addKeyListener(view.getKeyListener());
 
 
         DataManager manager = new DataManager();
-
         MDP2048 mdp = new MDP2048(controller);
 
         // Learning methods
         Learning<Model, Integer, DiscreteSpace, IDQN> dql =
-                new QLearningDiscreteDense<Model>(mdp, TOY_NET, TOY_QL, manager);
+                new QLearningDiscreteDense<>(mdp, TOY_NET, TOY_QL, manager);
         dql.train();
     }
 
@@ -57,7 +51,7 @@ public class Main {
                     100000,//Max step By epoch
                     80000, //Max step
                     10000, //Max size of experience replay
-                    32,    //size of batches
+                    1,     //size of batches
                     100,   //target update (hard)
                     0,     //num step noop warmup
                     0.05,  //reward scaling
@@ -65,6 +59,6 @@ public class Main {
                     10.0,  //td-error clipping
                     0.1f,  //min epsilon
                     2000,  //num step for eps greedy anneal
-                    true   //double DQN
+                    false  //double DQN
             );
 }
