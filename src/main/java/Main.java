@@ -23,12 +23,11 @@ public class Main {
      */
     public static void main(String[] args) throws Exception{
 
-        int modelSize = 4;
-        Model model = new Model(modelSize);
-        Controller controller = new Controller(model, modelSize);
+        Model model = new Model();
+        Controller controller = new Controller(model);
         controller.resetModel();
 
-        View view = View.createView(modelSize);
+        View view = View.createView();
         controller.addObserver(view);
         controller.modelChanged();
 

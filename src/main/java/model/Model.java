@@ -14,8 +14,10 @@ public class Model implements Encodable {
     public boolean win;
     public boolean lose;
 
-    public Model(int size) {
-        this.values = new int[size * size];
+    public static final int SIZE = 4;
+
+    public Model() {
+        this.values = new int[SIZE * SIZE];
         this.totalScore = 0;
         this.previousReward = 0;
         this.win = false;

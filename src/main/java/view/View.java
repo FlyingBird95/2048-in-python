@@ -21,7 +21,6 @@ public class View extends JPanel implements Observer{
     private static final int WIDTH = 340;
     private static final int HEIGHT = 400;
 
-    private int size;
     private Controller controller;
     private boolean keyPressed = false;
 
@@ -29,14 +28,14 @@ public class View extends JPanel implements Observer{
      * Creates the view
      * @return the view for the game
      */
-    public static View createView(int size){
+    public static View createView(){
         JFrame game = new JFrame();
         game.setTitle(TITLE);
         game.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         game.setSize(View.WIDTH, View.HEIGHT);
         game.setResizable(false);
 
-        View view = new View(size);
+        View view = new View();
         game.add(view);
 
         game.setLocationRelativeTo(null);
@@ -47,9 +46,7 @@ public class View extends JPanel implements Observer{
     /**
      * The board is responsible for drawing the background and the totalScore.
      */
-    private View(int size) {
-        this.size = size;
-
+    private View() {
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setFocusable(true);
     }
@@ -66,7 +63,7 @@ public class View extends JPanel implements Observer{
 
         Model model = this.controller.model;
         if(model != null){
-            this.drawTiles((Graphics2D) g, model.values, this.size);
+            this.drawTiles((Graphics2D) g, model.values, Model.SIZE);
             this.drawWinLose((Graphics2D) g, model.win, model.lose);
             this.drawScore((Graphics2D) g, model.totalScore);
         }
