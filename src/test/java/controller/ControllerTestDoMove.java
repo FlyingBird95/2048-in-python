@@ -120,17 +120,17 @@ public class ControllerTestDoMove {
     }
 
     private void allMoveTest(int[] input, int[] outputD, int[] outputL, int[] outputR, int[] outputU) throws  Exception{
-        moveTest(input, outputD, Controller.Move.DOWN);
-        moveTest(input, outputL, Controller.Move.LEFT);
-        moveTest(input, outputR, Controller.Move.RIGHT);
-        moveTest(input, outputU, Controller.Move.UP);
+        moveTest(input, outputD, Util.Move.DOWN);
+        moveTest(input, outputL, Util.Move.LEFT);
+        moveTest(input, outputR, Util.Move.RIGHT);
+        moveTest(input, outputU, Util.Move.UP);
     }
 
     private void allMoveTest(int[] input, int[] output) throws  Exception {
         allMoveTest(input, output, output, output, output);
     }
 
-    private void moveTest(int[] input, int[] output, Controller.Move move) throws  Exception {
+    private void moveTest(int[] input, int[] output, Util.Move move) throws  Exception {
         Model m = new Model(4);
         Controller c = new Controller(m, 4);
         c.setTestMode(true);

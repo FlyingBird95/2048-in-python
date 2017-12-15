@@ -12,14 +12,14 @@ public class MoveSpace extends DiscreteSpace{
     private Controller controller;
 
     public MoveSpace(Controller controller){
-        super(Controller.Move.values().length);
+        super(Util.Move.values().length);
         this.controller = controller;
         this.random = new Random();
     }
 
     @Override
     public Integer randomAction() {
-        int[] moves = Controller.toIntArray(controller.getPossibleMoves());
+        int[] moves = Util.toIntArray(controller.getPossibleMoves());
         int index = this.random.nextInt(moves.length);
         return moves[index];
     }

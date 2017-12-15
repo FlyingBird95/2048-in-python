@@ -1,6 +1,7 @@
 package view;
 
 import controller.Controller;
+import controller.Util;
 import model.Model;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -175,26 +176,26 @@ public class View extends JPanel implements Observer{
                     controller.resetModel();
                 }
 
-                Controller.Move[] moveList = controller.model.moveList;
+                Util.Move[] moveList = controller.model.moveList;
                 switch (e.getKeyCode()) {
                     case KeyEvent.VK_LEFT:
-                        if (ArrayUtils.contains(moveList, Controller.Move.LEFT)) {
-                            controller.doMove(Controller.Move.LEFT);
+                        if (ArrayUtils.contains(moveList, Util.Move.LEFT)) {
+                            controller.doMove(Util.Move.LEFT);
                         }
                         break;
                     case KeyEvent.VK_RIGHT:
-                        if (ArrayUtils.contains(moveList, Controller.Move.RIGHT)) {
-                            controller.doMove(Controller.Move.RIGHT);
+                        if (ArrayUtils.contains(moveList, Util.Move.RIGHT)) {
+                            controller.doMove(Util.Move.RIGHT);
                         }
                         break;
                     case KeyEvent.VK_DOWN:
-                        if (ArrayUtils.contains(moveList, Controller.Move.DOWN)) {
-                            controller.doMove(Controller.Move.DOWN);
+                        if (ArrayUtils.contains(moveList, Util.Move.DOWN)) {
+                            controller.doMove(Util.Move.DOWN);
                         }
                         break;
                     case KeyEvent.VK_UP:
-                        if (ArrayUtils.contains(moveList, Controller.Move.UP)) {
-                            controller.doMove(Controller.Move.UP);
+                        if (ArrayUtils.contains(moveList, Util.Move.UP)) {
+                            controller.doMove(Util.Move.UP);
                         }
                         break;
                 }

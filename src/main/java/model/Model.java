@@ -1,12 +1,13 @@
 package model;
 
-import controller.Controller;
+import controller.Util;
 import org.deeplearning4j.rl4j.space.Encodable;
+
 import java.util.Arrays;
 
 public class Model implements Encodable {
 
-    public Controller.Move[] moveList;
+    public Util.Move[] moveList;
     public int[] values;
     public int totalScore;
     public int previousReward;

@@ -7,40 +7,6 @@ import java.util.*;
 
 public class Controller extends Observable {
 
-    /**
-     * Define an enum with the available moves
-     */
-    public enum Move {
-            UP, RIGHT, DOWN, LEFT
-    }
-
-    public static Move getMove(Integer integer){
-        switch (integer){
-            case 0: return Move.UP;
-            case 1: return Move.RIGHT;
-            case 2: return Move.DOWN;
-            case 3: return Move.LEFT;
-            default: throw new IllegalArgumentException("Given value must be between 0-3");
-        }
-    }
-
-    public static int moveToInt(Move move){
-        switch (move){
-            case UP: return 0;
-            case RIGHT: return 1;
-            case DOWN: return 2;
-            case LEFT: return 3;
-            default: throw new IllegalArgumentException("Given move is invalid");
-        }
-    }
-
-    public static int[] toIntArray(Move[] moves){
-        int[] array = new int[moves.length];
-        for(int i=0; i<moves.length; i++){
-            array[i] = moveToInt(moves[i]);
-        }
-        return array;
-    }
 
     public Model model;
     private final int SIZE;
@@ -100,7 +66,7 @@ public class Controller extends Observable {
         return this.model.values[x + y * SIZE];
     }
 
-    public void doMove(Move move) {
+    public void doMove(Util.Move move) {
         switch (move){
             case UP:
                 this.rotate(270);
@@ -198,9 +164,9 @@ public class Controller extends Observable {
         this.model.values[resultingIndices[rnd]] = Math.random() < 0.9 ? 2 : 4;
     }
 
-    public Move[] getPossibleMoves(){
+    public Util.Move[] getPossibleMoves(){
         if(!this.isFull()) {
-            return new Move[]{Move.LEFT, Move.RIGHT, Move.UP, Move.DOWN};
+            return new Util.Move[]{Util.Move.LEFT, Util.Move.RIGHT, Util.Move.UP, Util.Move.DOWN};
         }
 
         boolean horizontal = isMovePossible();
@@ -209,16 +175,16 @@ public class Controller extends Observable {
         this.rotate(270);
 
         if(vertical && horizontal) {
-            return new Move[]{Move.LEFT, Move.RIGHT, Move.UP, Move.DOWN};
+            return new Util.Move[]{Util.Move.LEFT, Util.Move.RIGHT, Util.Move.UP, Util.Move.DOWN};
         }
         if(vertical) {
-            return new Move[]{Move.UP, Move.DOWN};
+            return new Util.Move[]{Util.Move.UP, Util.Move.DOWN};
         }
         if(horizontal) {
-            return new Move[]{Move.LEFT, Move.RIGHT};
+            return new Util.Move[]{Util.Move.LEFT, Util.Move.RIGHT};
         }
 
-        return new Move[]{};
+        return new Util.Move[]{};
     }
 
     private boolean isMovePossible(){

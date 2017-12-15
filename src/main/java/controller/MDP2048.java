@@ -63,7 +63,7 @@ public class MDP2048 implements MDP<Model, Integer, DiscreteSpace>{
 
     @Override
     public StepReply<Model> step(Integer integer) {
-        Controller.Move move = Controller.getMove(integer);
+        Util.Move move = Util.getMove(integer);
         controller.doMove(move);
         return new StepReply<>(
                 this.controller.model,
