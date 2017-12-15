@@ -1,13 +1,12 @@
-package controller;
+package rl4j;
 
+import controller.Controller;
 import model.Model;
 import org.deeplearning4j.gym.StepReply;
 import org.deeplearning4j.rl4j.mdp.MDP;
 import org.deeplearning4j.rl4j.space.DiscreteSpace;
 import org.deeplearning4j.rl4j.space.ObservationSpace;
 import org.json.JSONObject;
-import org.nd4j.linalg.api.ndarray.INDArray;
-import org.nd4j.linalg.factory.Nd4j;
 
 public class MDP2048 implements MDP<Model, Integer, DiscreteSpace>{
 
@@ -18,27 +17,7 @@ public class MDP2048 implements MDP<Model, Integer, DiscreteSpace>{
     public MDP2048(Controller controller){
         this.controller = controller;
         this.actionSpace = new DiscreteSpace(this.controller.model.moveList.length);
-        this.observationSpace = new ObservationSpace<Model>() {
-            @Override
-            public String getName() {
-                return "Custom";
-            }
-
-            @Override
-            public int[] getShape() {
-                return new int[]{controller.model.toArray().length};
-            }
-
-            @Override
-            public INDArray getLow() {
-                return Nd4j.create(1);
-            }
-
-            @Override
-            public INDArray getHigh() {
-                return Nd4j.create(1);
-            }
-        };
+        this.observationSpace = new ObservationSpace2048(this.controller.model);
     }
 
     @Override

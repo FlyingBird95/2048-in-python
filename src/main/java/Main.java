@@ -2,8 +2,7 @@
 //import view.View;
 
 import controller.Controller;
-import controller.MDP2048;
-import controller.MoveSpace;
+import rl4j.MDP2048;
 import model.Model;
 import org.deeplearning4j.rl4j.learning.Learning;
 import org.deeplearning4j.rl4j.learning.sync.qlearning.QLearning;

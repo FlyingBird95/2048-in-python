@@ -1,7 +1,8 @@
-package controller;
+package rl4j;
 
 import java.util.Random;
 
+import controller.Controller;
 import model.Model;
 import org.deeplearning4j.rl4j.space.ActionSpace;
 
