@@ -82,12 +82,6 @@ public class ControllerTestPossibleMoves {
         Controller c = new Controller(m);
 
         m.values = input;
-//        List<Controller.Move> moveList = c.getPossibleMoves();
-
-//        assertTrue(output.length == moveList.size());
-//        for(Controller.Move move : output){
-//            assertTrue(moveList.contains(move));
-//        }
 
         MoveUtil.Move[] moveList = c.getPossibleMoves();
         assertTrue(output.length == moveList.length);

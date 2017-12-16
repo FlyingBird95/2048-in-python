@@ -17,8 +17,9 @@ public class MoveSpace extends DiscreteSpace{
 
     @Override
     public Integer randomAction() {
-        // Choose an integer from list of possible moves
         int[] moves = MoveUtil.toIntArray(controller.getPossibleMoves());
+        if(moves.length == 0)
+            return this.noOp();
         int index = this.rd.nextInt(moves.length);
         return moves[index];
     }
@@ -30,6 +31,6 @@ public class MoveSpace extends DiscreteSpace{
 
     @Override
     public Integer noOp() {
-        throw new IllegalArgumentException("Shouldn't call this method");
+        return -1;
     }
 }
