@@ -1,6 +1,8 @@
 package model;
 
 import Util.MoveUtil;
+import controller.Controller;
+import org.apache.commons.lang3.ArrayUtils;
 import org.deeplearning4j.rl4j.space.Encodable;
 
 import java.util.Arrays;
@@ -33,5 +35,15 @@ public class Model implements Encodable {
     public double[] toArray() {
         // Convert model to double array
         return Arrays.stream(this.values).asDoubleStream().toArray();
+    }
+
+    public Model clone(){
+        Model m = new Model();
+        m.values = ArrayUtils.clone(this.values);
+        m.totalScore = this.totalScore;
+        m.previousReward = this.previousReward;
+        m.win = this.win;
+        m.lose = this.lose;
+        return m;
     }
 }

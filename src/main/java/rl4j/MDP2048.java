@@ -60,6 +60,6 @@ public class MDP2048 implements MDP<Model, Integer, DiscreteSpace>{
 
     @Override
     public MDP2048 newInstance() {
-        return new MDP2048(this.controller);
+        return new MDP2048(this.controller.clone());
     }
 }

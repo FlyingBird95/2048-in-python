@@ -218,4 +218,10 @@ public class Controller extends Observable {
         setChanged();
         notifyObservers(this);
     }
+
+    public Controller clone(){
+        Controller c = new Controller(this.model.clone());
+        c.testMode = this.testMode;
+        return c;
+    }
 }

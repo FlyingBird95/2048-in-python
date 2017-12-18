@@ -24,12 +24,12 @@ public class Main {
         Controller controller = new Controller(model);
         controller.resetModel();
 
-        View view = View.createView();
-        controller.addObserver(view);
-        controller.modelChanged();
-
-        view.setController(controller);
-        view.addKeyListener(view.getKeyListener());
+//        View view = View.createView();
+//        controller.addObserver(view);
+//        controller.modelChanged();
+//
+//        view.setController(controller);
+//        view.addKeyListener(view.getKeyListener());
 
 
         DataManager manager = new DataManager();
