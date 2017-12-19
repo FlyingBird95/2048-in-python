@@ -24,15 +24,15 @@ public class Main {
         Controller controller = new Controller(model);
         controller.resetModel();
 
-//        View view = View.createView();
-//        controller.addObserver(view);
-//        controller.modelChanged();
-//
-//        view.setController(controller);
-//        view.addKeyListener(view.getKeyListener());
+        View view = View.createView();
+        controller.addObserver(view);
+        controller.modelChanged();
+
+        view.setController(controller);
+        view.addKeyListener(view.getKeyListener());
 
 
-        DataManager manager = new DataManager();
+        DataManager manager = new DataManager(true);
         MDP2048 mdp = new MDP2048(controller);
 
         // Learning methods
@@ -54,7 +54,7 @@ public class Main {
                     1,     //size of batches
                     100,   //target update (hard)
                     0,     //num step noop warmup
-                    0.05,  //reward scaling
+                    0.01,  //reward scaling
                     0.99,  //gamma
                     10.0,  //td-error clipping
                     0.1f,  //min epsilon
