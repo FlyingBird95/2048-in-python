@@ -16,7 +16,6 @@ public class MoveSpaceTest {
             MoveUtil.Move.LEFT,
             MoveUtil.Move.RIGHT
     };
-//    private int[] allMovesId = MoveUtil.toIntArray(allMoves);
 
     @Test
     public void moveZero() throws Exception {
@@ -81,6 +80,5 @@ public class MoveSpaceTest {
                 assertTrue(moveCount[i] == 0);
             }
         }
-//        System.out.println(ArrayUtils.toString(moveCount));
     }
 }

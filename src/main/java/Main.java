@@ -24,12 +24,12 @@ public class Main {
         Controller controller = new Controller(model);
         controller.resetModel();
 
-        View view = View.createView();
-        controller.addObserver(view);
+//        View view = View.createView();
+//        controller.addObserver(view);
         controller.modelChanged();
 
-        view.setController(controller);
-        view.addKeyListener(view.getKeyListener());
+//        view.setController(controller);
+//        view.addKeyListener(view.getKeyListener());
 
 
         DataManager manager = new DataManager();
@@ -43,22 +43,22 @@ public class Main {
 
     public static DQNFactoryStdDense.Configuration TOY_NET =
             DQNFactoryStdDense.Configuration.builder()
-                    .l2(0.01).learningRate(1e-2).numLayer(3).numHiddenNodes(16).build();
+                    .l2(0.001).learningRate(0.0005).numHiddenNodes(16).numLayer(3).build();
 
     public static QLearning.QLConfiguration TOY_QL =
             new QLearning.QLConfiguration(
-                    123,   //Random seed
-                    100000,//Max step By epoch
-                    80000, //Max step
-                    10000, //Max size of experience replay
-                    1,     //size of batches
-                    100,   //target update (hard)
-                    0,     //num step noop warmup
-                    0.05,  //reward scaling
-                    0.99,  //gamma
-                    10.0,  //td-error clipping
-                    0.1f,  //min epsilon
-                    2000,  //num step for eps greedy anneal
-                    false  //double DQN
+                    123,    //Random seed
+                    200,    //Max step By epoch
+                    150000, //Max step
+                    150000, //Max size of experience replay
+                    32,     //size of batches
+                    500,    //target update (hard)
+                    0,      //num step noop warmup   - The game only updates after doing a move.
+                    0.01,   //reward scaling
+                    0.99,   //gamma
+                    1.0,    //td-error clipping
+                    0.1f,   //min epsilon
+                    1000,   //num step for eps greedy anneal
+                    true    //double DQN
             );
 }
