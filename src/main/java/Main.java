@@ -51,7 +51,7 @@ public class Main {
     public static QLearning.QLConfiguration TOY_QL =
             new QLearning.QLConfiguration(
                     123,    //Random seed
-                    200,    //Max step By epoch
+                    20000,    //Max step By epoch
                     150000, //Max step
                     150000, //Max size of experience replay
                     32,     //size of batches

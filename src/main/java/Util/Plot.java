@@ -1,38 +1,23 @@
 package Util;
 
-import jdk.nashorn.internal.objects.Global;
-import jdk.nashorn.internal.parser.JSONParser;
-import model.Model;
-import org.deeplearning4j.rl4j.network.dqn.IDQN;
+import org.deeplearning4j.rl4j.util.Constants;
 import org.deeplearning4j.rl4j.util.DataManager;
-import org.json.JSONArray;
 import org.json.JSONObject;
-import org.nd4j.linalg.primitives.Pair;
-import rl4j.MDP2048;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.Scanner;
 
 public class Plot extends JPanel {
 
-    private int width = 800;
-    private int heigth = 400;
-    private int padding = 25;
-    private int labelPadding = 25;
     private Color lineColor = new Color(44, 102, 230, 180);
     private Color pointColor = new Color(100, 100, 100, 180);
     private Color gridColor = new Color(200, 200, 200, 200);
     private static final Stroke GRAPH_STROKE = new BasicStroke(2f);
-    private int pointWidth = 4;
-    private int numberYDivisions = 10;
     private List<Double> scores;
 
     public Plot(List<Double> scores) {
@@ -45,6 +30,8 @@ public class Plot extends JPanel {
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
+        int padding = 25;
+        int labelPadding = 25;
         double xScale = ((double) getWidth() - (2 * padding) - labelPadding) / (scores.size() - 1);
         double yScale = ((double) getHeight() - 2 * padding - labelPadding) / (getMaxScore() - getMinScore());
 
@@ -61,6 +48,8 @@ public class Plot extends JPanel {
         g2.setColor(Color.BLACK);
 
         // create hatch marks and grid lines for y axis.
+        int pointWidth = 4;
+        int numberYDivisions = 10;
         for (int i = 0; i < numberYDivisions + 1; i++) {
             int x0 = padding + labelPadding;
             int x1 = pointWidth + padding + labelPadding;
@@ -115,19 +104,15 @@ public class Plot extends JPanel {
 
         g2.setStroke(oldStroke);
         g2.setColor(pointColor);
-        for (int i = 0; i < graphPoints.size(); i++) {
-            int x = graphPoints.get(i).x - pointWidth / 2;
-            int y = graphPoints.get(i).y - pointWidth / 2;
+        for (Point graphPoint : graphPoints) {
+            int x = graphPoint.x - pointWidth / 2;
+            int y = graphPoint.y - pointWidth / 2;
             int ovalW = pointWidth;
             int ovalH = pointWidth;
             g2.fillOval(x, y, ovalW, ovalH);
         }
     }
 
-    //    @Override
-//    public Dimension getPreferredSize() {
-//        return new Dimension(width, heigth);
-//    }
     private double getMinScore() {
         double minScore = Double.MAX_VALUE;
         for (Double score : scores) {
@@ -144,16 +129,6 @@ public class Plot extends JPanel {
         return maxScore;
     }
 
-    public void setScores(List<Double> scores) {
-        this.scores = scores;
-        invalidate();
-        this.repaint();
-    }
-
-    public List<Double> getScores() {
-        return scores;
-    }
-
     private static void createAndShowGui(List<Double> scores, String title) {
         Plot mainPanel = new Plot(scores);
         mainPanel.setPreferredSize(new Dimension(800, 600));
@@ -166,13 +141,22 @@ public class Plot extends JPanel {
     }
 
     public static void main(String[] args) throws IOException {
-        createPlot(new DataManager(true));
+        createPlot(11);
+    }
+
+
+    public static void createPlot(int index) throws IOException {
+        createPlot(System.getProperty("user.home") + "/" + Constants.DATA_DIR + "/" + index + "/stat");
     }
 
     public static void createPlot(DataManager manager) throws IOException {
+        createPlot(manager.getStat());
+    }
+
+    private static void createPlot(String path) throws IOException {
         ArrayList<Double> rewardValues = new ArrayList<>();
         ArrayList<Double> episodeLengthValues = new ArrayList<>();
-        File file = new File(manager.getStat());
+        File file = new File(path);
         Scanner scanner = new Scanner(file);
         try {
             while(scanner.hasNextLine()) {
@@ -184,11 +168,9 @@ public class Plot extends JPanel {
             scanner.close();
         }
 
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                createAndShowGui(rewardValues, "Reward");
-                createAndShowGui(episodeLengthValues, "EpisodeLength");
-            }
+        SwingUtilities.invokeLater(() -> {
+            createAndShowGui(rewardValues, "Reward");
+            createAndShowGui(episodeLengthValues, "EpisodeLength");
         });
     }
 }
