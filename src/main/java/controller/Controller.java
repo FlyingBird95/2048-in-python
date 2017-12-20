@@ -126,7 +126,8 @@ public class Controller extends Observable {
 
             if(i < (Model.SIZE - 1) && current == list[i + 1]){
                 current *= 2;
-                score += current;
+//                score += current;
+                score++;
                 i++;
             }
             line[move++] = current;

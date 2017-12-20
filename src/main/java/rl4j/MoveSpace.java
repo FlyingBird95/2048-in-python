@@ -11,7 +11,7 @@ public class MoveSpace extends DiscreteSpace{
     private Controller controller;
 
     public MoveSpace(Controller controller){
-        super(MoveUtil.Move.values().length);
+        super(0);
         this.controller = controller;
     }
 
