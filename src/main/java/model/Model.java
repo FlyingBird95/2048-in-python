@@ -39,6 +39,7 @@ public class Model implements Encodable {
 
     public Model clone(){
         Model m = new Model();
+        m.moveList = ArrayUtils.clone(this.moveList);
         m.values = ArrayUtils.clone(this.values);
         m.totalScore = this.totalScore;
         m.previousReward = this.previousReward;

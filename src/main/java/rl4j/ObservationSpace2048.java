@@ -17,7 +17,7 @@ public class ObservationSpace2048 implements ObservationSpace<Model> {
         this.model = model;
         this.name = "Not sure";
         low = Nd4j.create(1);
-        high = Nd4j.create(1);
+        high = Nd4j.create(2);
     }
 
     @Override

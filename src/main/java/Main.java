@@ -1,3 +1,4 @@
+import Util.Plot;
 import controller.Controller;
 import rl4j.MDP2048;
 import model.Model;
@@ -39,6 +40,8 @@ public class Main {
         Learning<Model, Integer, DiscreteSpace, IDQN> dql =
                 new QLearningDiscreteDense<>(mdp, TOY_NET, TOY_QL, manager);
         dql.train();
+
+        Plot.createPlot(manager);
     }
 
     public static DQNFactoryStdDense.Configuration TOY_NET =
@@ -54,7 +57,7 @@ public class Main {
                     1,     //size of batches
                     100,   //target update (hard)
                     0,     //num step noop warmup
-                    0.01,  //reward scaling
+                    1,  //reward scaling
                     0.99,  //gamma
                     10.0,  //td-error clipping
                     0.1f,  //min epsilon
