@@ -32,7 +32,7 @@ public class Main {
 //        view.addKeyListener(view.getKeyListener());
 
 
-        DataManager manager = new DataManager();
+        DataManager manager = new DataManager(true);
         MDP2048 mdp = new MDP2048(controller);
 
         // Learning methods
