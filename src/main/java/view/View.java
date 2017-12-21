@@ -2,6 +2,7 @@ package view;
 
 import Util.MoveUtil;
 import controller.Controller;
+import controller.GameLogic;
 import model.Model;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -21,8 +22,7 @@ public class View extends JPanel implements Observer{
     private static final int WIDTH = 340;
     private static final int HEIGHT = 400;
 
-    private Controller controller;
-    private boolean keyPressed = false;
+    private Model model;
 
     /**
      * Creates the view
@@ -51,20 +51,15 @@ public class View extends JPanel implements Observer{
         setFocusable(true);
     }
 
-    public void setController(Controller c){
-        this.controller = c;
-    }
-
     @Override
     public void paint(Graphics g) {
         super.paint(g);
         g.setColor(BG_COLOR);
         g.fillRect(0, 0, this.getSize().width, this.getSize().height);
 
-        Model model = this.controller.model;
         if(model != null){
             this.drawTiles((Graphics2D) g, model.values, Model.SIZE);
-            this.drawWinLose((Graphics2D) g, model.win, model.lose);
+            this.drawWinLose((Graphics2D) g, GameLogic.hasWon(model), GameLogic.hasLost(model));
             this.drawScore((Graphics2D) g, model.totalScore);
         }
     }
@@ -149,58 +144,9 @@ public class View extends JPanel implements Observer{
 
     @Override
     public void update(Observable observable, Object o) {
-        if (o instanceof Controller){
-            this.controller = (Controller) o;
+        if (o instanceof Model){
+            this.model = (Model) o;
         }
         repaint();
-    }
-
-    /**
-     * KeyListener for the model. The following keys are supported:
-     * - Escape: for resetting the game.
-     * - Left, Right, Down and Up: for making a doMove.
-     * @return the keyListener for the model.
-     */
-    public KeyListener getKeyListener(){
-        return new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if(keyPressed)
-                    return;
-                keyPressed = true;
-
-                if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-                    controller.resetModel();
-                }
-
-                MoveUtil.Move[] moveList = controller.model.moveList;
-                switch (e.getKeyCode()) {
-                    case KeyEvent.VK_LEFT:
-                        if (ArrayUtils.contains(moveList, MoveUtil.Move.LEFT)) {
-                            controller.doMove(MoveUtil.Move.LEFT);
-                        }
-                        break;
-                    case KeyEvent.VK_RIGHT:
-                        if (ArrayUtils.contains(moveList, MoveUtil.Move.RIGHT)) {
-                            controller.doMove(MoveUtil.Move.RIGHT);
-                        }
-                        break;
-                    case KeyEvent.VK_DOWN:
-                        if (ArrayUtils.contains(moveList, MoveUtil.Move.DOWN)) {
-                            controller.doMove(MoveUtil.Move.DOWN);
-                        }
-                        break;
-                    case KeyEvent.VK_UP:
-                        if (ArrayUtils.contains(moveList, MoveUtil.Move.UP)) {
-                            controller.doMove(MoveUtil.Move.UP);
-                        }
-                        break;
-                }
-            }
-            @Override
-            public void keyReleased(KeyEvent e) {
-                keyPressed = false;
-            }
-        };
     }
 }
