@@ -44,10 +44,9 @@ public class MDP2048 implements MDP<Model, Integer, DiscreteSpace>{
     @Override
     public StepReply<Model> step(Integer integer) {
         controller.doMove(MoveUtil.getMove(integer));
-
         return new StepReply<>(
                 this.controller.model,
-                this.controller.model.previousReward,
+                controller.model.lose ? -1 : 0,
                 this.isDone(),
                 new JSONObject("{}")
         );
