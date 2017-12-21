@@ -220,6 +220,7 @@ public class Controller extends Observable {
         notifyObservers(this);
     }
 
+    @Override
     public Controller clone(){
         Controller c = new Controller(this.model.clone());
         c.testMode = this.testMode;

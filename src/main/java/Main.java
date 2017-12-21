@@ -1,3 +1,4 @@
+import Util.Plot;
 import controller.Controller;
 import rl4j.MDP2048;
 import model.Model;
@@ -39,11 +40,13 @@ public class Main {
         Learning<Model, Integer, DiscreteSpace, IDQN> dql =
                 new QLearningDiscreteDense<>(mdp, TOY_NET, TOY_QL, manager);
         dql.train();
+
+        Plot.createPlot(manager);
     }
 
     public static DQNFactoryStdDense.Configuration TOY_NET =
             DQNFactoryStdDense.Configuration.builder()
-                    .l2(0.001).learningRate(0.0005).numHiddenNodes(16).numLayer(3).build();
+                    .l2(0.001).learningRate(0.0005).numHiddenNodes(32).numLayer(3).build();
 
     public static QLearning.QLConfiguration TOY_QL =
             new QLearning.QLConfiguration(
