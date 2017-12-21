@@ -16,7 +16,7 @@ public class GameLogic {
         return m;
     }
 
-    private static void addTile(Model model) {
+    public static void addTile(Model model) {
         if(GameLogic.isFull(model)) {
             return;
         }
@@ -63,28 +63,29 @@ public class GameLogic {
         return model.values[x + y * Model.SIZE];
     }
 
-    public static void doMove(Model model, MoveUtil.Move move) {
+    public static Model doMove(Model model, MoveUtil.Move move) {
+        Model newModel = model.clone();
         switch (move){
             case UP:
-                rotate(model, 270);
-                doMove(model);
-                rotate(model, 90);
+                rotate(newModel, 270);
+                doMove(newModel);
+                rotate(newModel, 90);
                 break;
             case RIGHT:
-                rotate(model, 180);
-                doMove(model);
-                rotate(model, 180);
+                rotate(newModel, 180);
+                doMove(newModel);
+                rotate(newModel, 180);
                 break;
             case DOWN:
-                rotate(model, 90);
-                doMove(model);
-                rotate(model, 270);
+                rotate(newModel, 90);
+                doMove(newModel);
+                rotate(newModel, 270);
                 break;
             case LEFT:
-                doMove(model);
+                doMove(newModel);
                 break;
         }
-        addTile(model);
+        return newModel;
     }
 
     private static void doMove(Model model){

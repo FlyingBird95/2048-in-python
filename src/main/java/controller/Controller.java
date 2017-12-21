@@ -1,6 +1,7 @@
 package controller;
 
 import model.Model;
+import rl.TestRL;
 import view.View;
 
 import java.util.Observable;
@@ -8,18 +9,40 @@ import java.util.Observable;
 public class Controller extends Observable {
 
     private Model model;
-    private View view;
 
-    public Controller(){
-        this.model = GameLogic.newModel();
+    private static Controller instance = null;
 
-        this.view = View.createView();
-        addObserver(this.view);
+    public static Controller getInstance(){
+        if (instance == null){
+            instance = new Controller();
+            instance.start();
+        }
+        return instance;
+    }
+
+    private Controller(){
+        model = GameLogic.newModel();
+
+        View view = View.createView();
+        addObserver(view);
         modelChanged();
     }
 
+    private void start(){
+        TestRL<Model> test = new TestRL<>() ;
+        test.train();
+    }
 
-    public void modelChanged() {
+    public Model getModel(){
+        return model;
+    }
+
+    public void setModel(Model model){
+        this.model = model;
+        modelChanged();
+    }
+
+    private void modelChanged() {
         setChanged();
         notifyObservers(model);
     }

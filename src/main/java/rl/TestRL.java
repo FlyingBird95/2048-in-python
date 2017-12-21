@@ -1,7 +1,8 @@
 package rl;
-import java.util.Random;
-import java.util.Scanner;
 
+import controller.Controller;
+import controller.GameLogic;
+import model.Model;
 import org.deeplearning4j.nn.api.OptimizationAlgorithm;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
@@ -9,22 +10,19 @@ import org.deeplearning4j.nn.conf.Updater;
 import org.deeplearning4j.nn.conf.layers.DenseLayer;
 import org.deeplearning4j.nn.conf.layers.OutputLayer;
 import org.deeplearning4j.nn.weights.WeightInit;
-import org.nd4j.linalg.api.ndarray.INDArray;
-import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.lossfunctions.LossFunctions.LossFunction;
 
-public class TestRL {
+public class TestRL<M extends Trainable> {
 
-	DeepQNetwork RLNet;
-	int size = 4;
-	int scale = 3;
-	
-	float FrameBuffer[][];
-	
-	void InitNet(){
+    private DeepQNetwork deepQNetwork;
+	private int size = 4;
+
+    private void initNet(){
 		
-		int InputLength = size*size*2+1 ;
-		int HiddenLayerCount = 150 ;
+		int inputLength = 16; // must be equal to the number of values that are
+        // inserted using the toArray-function from Trainable
+		int hiddenLayerCount = 150;
+
         MultiLayerConfiguration conf1 = new NeuralNetConfiguration.Builder()
        		 .seed(123)
 	             .iterations(1)
@@ -32,204 +30,64 @@ public class TestRL {
 	             .learningRate(0.0025)
 	             .updater(Updater.NESTEROVS)
 	             .list()
-	             .layer(0, new DenseLayer.Builder().nIn(InputLength).nOut(HiddenLayerCount)
+	             .layer(0, new DenseLayer.Builder().nIn(inputLength).nOut(hiddenLayerCount)
 	            		 	.weightInit(WeightInit.XAVIER)
 		                        .activation("relu")
 		                        .build())
 	             .layer(1, new OutputLayer.Builder(LossFunction.MSE)
 	                        .weightInit(WeightInit.XAVIER)
 	                        .activation("identity").weightInit(WeightInit.XAVIER)
-	                        .nIn(HiddenLayerCount).nOut(4).build())
+	                        .nIn(hiddenLayerCount).nOut(4).build())
 	             .pretrain(false).backprop(true).build();
-		
-		
-		RLNet = new DeepQNetwork(conf1 ,  100000 , .99f , 1d , 1024 , 500 , 1024 , InputLength);
-	}
-	
-	Random r = new Random();
-	
-	float[][] GenerateMap(){
-		int player = r.nextInt(size * size);
-		int goal = r.nextInt(size * size);
-		while(goal == player)
-			goal = r.nextInt(size * size);
-		float[][] map = new float[size][size];
-		for(int i = 0; i < size*size ; i++)
-			map[i/size][i%size] = 0;
-		map[goal/size][goal%size] = -1 ;
-		map[player/size][player%size] = 1 ;
 
-		
-		return map;
-	}
-	
-	int CalcPlayerPos(float[][] Map){
-		int x = -1;
-		for(int i = 0 ; i < size * size ; i++){
-			if(Map[i/size][i%size] == 1)
-				return i;
-		}
-		return x;
-	}
-	
-	int CalcGoalPos(float[][] Map){
-		int x = -1;
-		for(int i = 0 ; i < size * size ; i++){
-			if(Map[i/size][i%size] == -1)
-				return i;
-		}
-		return x;
-	}
-	
-	int[] GetActionMask(float[][] CurrMap){
-		int retVal[] = { 1 , 1 , 1 , 1} ;
-		
-		int player = CalcPlayerPos(CurrMap);
-		if(player < size)
-			retVal[0] = 0;
-		if(player >= size*size - size )
-			retVal[1] = 0;
-		if(player % size == 0)
-			retVal[2] = 0;
-		if(player % size == size-1)
-			retVal[3] = 0;
-		
-		return retVal ;
-	}
-	
-	float[][] DoMove(float[][] CurrMap , int action){
-		float nextMap[][] = new float[size][size];
-		for(int i = 0; i < size*size ; i++)
-			nextMap[i/size][i%size] = CurrMap[i/size][i%size];
-		
-		int player = CalcPlayerPos(CurrMap);
-		nextMap[player/size][player%size] = 0;
-		if( action == 0 ){
-			if(player - size >= 0)
-				nextMap[(player-size)/size][player%size] = 1;
-			else
-				throw new RuntimeException("Bad Move");
-		}
-		else if( action == 1 ){
-			if(player + size < size * size)
-				nextMap[(player+size)/size][player%size] = 1;
-			else
-				throw new RuntimeException("Bad Move");
-		}
-		else if( action == 2 ){
-			if((player%size) - 1 >= 0)
-				nextMap[player/size][(player%size) - 1] = 1;
-			else
-				throw new RuntimeException("Bad Move");
-		}
-		else if( action == 3 ){
-			if((player%size) + 1 < size)
-				nextMap[player/size][(player%size) + 1] = 1;
-			else
-				throw new RuntimeException("Bad Move");
-		}
-		return nextMap;
-	}
-	
-	float CalcReward(float[][]CurrMap , float[][]NextMap){
-		int newGoal = CalcGoalPos(NextMap);
-		
-		if(newGoal == -1 )
-			return size*size + 1;
-		
-		return -1f;
-	}
-	
-	void AddToBuffer(float[][] NextFrame){
-			FrameBuffer = NextFrame;
-	}
-	
-	INDArray FlattenInput(int TimeStep){
-		float flattenedInput[] = new float[size*size*2+1];
-		for(int a = 0; a < size ; a++){
-			for(int b = 0; b < size ; b++){
-				if(FrameBuffer[a][b] == -1)
-					flattenedInput[a*size + b] = 1;
-				else
-					flattenedInput[a*size + b] = 0;
-				if(FrameBuffer[a][b] == 1)
-					flattenedInput[size*size + a*size + b] = 1;
-				else
-					flattenedInput[size*size + a*size + b] = 0;
-			}
-		}
-		flattenedInput[size*size*2] = TimeStep;
-		return Nd4j.create(flattenedInput);
-	}
-	
-	void PrintBoard(float[][] Map){
-		for(int x = 0; x < size ; x++){
-			for(int y = 0; y < size ; y++){
-				System.out.print((int)Map[x][y]);
-			}
-			System.out.println("");
-		}
-		System.out.println("");
+		deepQNetwork = new DeepQNetwork(conf1 ,  100000 , .99f , 1d , 1024 , 500 , 1024 , inputLength);
 	}
 
-	public static void main(String[] args) {
-		
-		TestRL test = new TestRL() ;
-		test.InitNet() ;
-		
-		for(int m = 0 ; m < 1500 ; m++){
+
+	public void train() {
+		initNet() ;
+
+        /*
+         * I guess this is for training
+         */
+        for(int m = 0; m < 1500; m++){
 			System.out.println("Episode: " + m) ;
-			float CurrMap[][] = test.GenerateMap() ;
-			test.FrameBuffer = CurrMap ;
-			int t = 0;
-			float tReward = 0 ;
-			//test.PrintBoard(CurrMap);
-			for(int i = 0 ; i < 2*test.size ; i ++){
-				//test.PrintBoard(CurrMap);
-				int a = test.RLNet.GetAction(test.FlattenInput(t) , test.GetActionMask(CurrMap)) ;
-				float NextMap[][] = test.DoMove(CurrMap, a) ;
-				float r = test.CalcReward(CurrMap, NextMap) ;
-				tReward += r;
-				test.AddToBuffer(NextMap);
-				t++;
-				if(r == test.size*test.size + 1){
-					test.RLNet.ObserveReward(r, null , test.GetActionMask(NextMap));
+
+            for(int i = 0 ; i < 2*size ; i ++){
+                Trainable model = Controller.getInstance().getModel();
+				int a = deepQNetwork.getAction(model.toArray(), model.getActionMask()) ;
+                Model newModel = (Model) model.doMove(a);
+				float r = newModel.getReward();
+                if(newModel.hasTerminated()){
+					deepQNetwork.observeReward(r, null , newModel.getActionMask());
+                    Controller.getInstance().setModel(GameLogic.newModel());
 					break;
 				}
-				test.RLNet.ObserveReward(r, test.FlattenInput(t), test.GetActionMask(NextMap));
-				CurrMap = NextMap;
-				
+				deepQNetwork.observeReward(r, newModel.toArray(), newModel.getActionMask());
+				Controller.getInstance().setModel(newModel);
 			}
-			//System.out.println("Net Score: " + (i));
 		}
-		
-		Scanner keyboard = new Scanner(System.in);
-				
+
+
+        /*
+         * I guess this is for testing
+         */
+        deepQNetwork.setEpsilon(0); // this implies to not train anymore
 		for(int m = 0 ; m < 100 ; m++){
-			test.RLNet.SetEpsilon(0);
-			float CurrMap[][] = test.GenerateMap();
-			test.FrameBuffer = CurrMap;
-			int t = 0;
-			float tReward = 0;
+            float tReward = 0;
 			while(true){
-				test.PrintBoard(CurrMap);
-				keyboard.nextLine();
-				int a = test.RLNet.GetAction(test.FlattenInput(t) , test.GetActionMask(CurrMap)) ;
-				float NextMap[][] = test.DoMove(CurrMap, a) ;
-				float r = test.CalcReward(CurrMap, NextMap) ;
+				int a = deepQNetwork.getAction(Controller.getInstance().getModel().toArray(),
+                        Controller.getInstance().getModel().getActionMask()) ;
+				Model newModel = (Model) Controller.getInstance().getModel().doMove(a);
+				float r = newModel.getReward();
 				tReward += r;
-				test.AddToBuffer(NextMap);
-				t++;
-				test.RLNet.ObserveReward(r, test.FlattenInput(t) , test.GetActionMask(NextMap));
-				if(r == test.size*test.size + 1)
-					break;
-				CurrMap = NextMap;
+                deepQNetwork.observeReward(r, newModel.toArray() , newModel.getActionMask());
+				if(newModel.hasTerminated()) {
+                    break;
+                }
+				Controller.getInstance().setModel(newModel);
 			}
 			System.out.println("Net Score: " + (tReward));
 		}
-		
-		
-		
 	}
-
 }

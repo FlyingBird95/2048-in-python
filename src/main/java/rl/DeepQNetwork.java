@@ -1,106 +1,101 @@
 package rl;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import org.apache.commons.io.FileUtils;
+import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
+import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
+import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.factory.Nd4j;
+
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.apache.commons.io.FileUtils;
-import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
-import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
-import org.nd4j.linalg.api.ndarray.INDArray;
-import org.nd4j.linalg.factory.Nd4j;
-import rl.Replay;
-
 public class DeepQNetwork {
 
-	private int ReplayMemoryCapacity;
-	private List<Replay> ReplayMemory;
+	private int replayMemoryCapacity;
+	private List<Replay> replayMemory;
 
-	private double Epsilon;
-	private float Discount;
-	private MultiLayerNetwork DeepQ;
-	private MultiLayerNetwork TargetDeepQ;
-	private int BatchSize;
-	private int UpdateFreq;
-	private int UpdateCounter;
-	private int ReplayStartSize;
-	private Random r;
+	private double epsilon;
+	private float discount;
+	private MultiLayerNetwork deepQ;
+	private MultiLayerNetwork targetDeepQ;
+	private int batchSize;
+	private int updateFreq;
+	private int updateCounter;
+	private int replayStartSize;
+	private Random random;
 	
-	private int InputLength;
+	private int inputLength;
 
-	private INDArray LastInput;
-	private int LastAction;
+	private INDArray lastInput;
+	private int lastAction;
 	
 	DeepQNetwork(MultiLayerConfiguration conf, int replayMemoryCapacity, float discount,
 				 double epsilon, int batchSize, int updateFreq, int replayStartSize, int inputLength){
-		DeepQ = new MultiLayerNetwork(conf);
-		DeepQ.init();
-		TargetDeepQ = new MultiLayerNetwork(conf);
-		TargetDeepQ.init();
-		TargetDeepQ.setParams(DeepQ.params());
-		ReplayMemoryCapacity = replayMemoryCapacity;
-		Epsilon = epsilon;
-		Discount = discount;
-		r = new Random();
-		BatchSize = batchSize;
-		UpdateFreq = updateFreq;
-		UpdateCounter = 0;
-		ReplayMemory = new ArrayList<Replay>();
-		ReplayStartSize = replayStartSize;
-		InputLength = inputLength;
+		deepQ = new MultiLayerNetwork(conf);
+		deepQ.init();
+		targetDeepQ = new MultiLayerNetwork(conf);
+		targetDeepQ.init();
+		targetDeepQ.setParams(deepQ.params());
+
+		this.replayMemoryCapacity = replayMemoryCapacity;
+		this.epsilon = epsilon;
+		this.discount = discount;
+		random = new Random();
+		this.batchSize = batchSize;
+		this.updateFreq = updateFreq;
+		updateCounter = 0;
+		replayMemory = new ArrayList<>();
+		this.replayStartSize = replayStartSize;
+		this.inputLength = inputLength;
 	}
 	
-	void SetEpsilon(double e){
-		Epsilon = e;
+	void setEpsilon(double e){
+		epsilon = e;
 	}
 	
-	void AddReplay(float reward , INDArray NextInput , int NextActionMask[]){
-		if( ReplayMemory.size() >= ReplayMemoryCapacity )
-			ReplayMemory.remove( r.nextInt(ReplayMemory.size()) );
-		ReplayMemory.add(new Replay(LastInput , LastAction , reward , NextInput , NextActionMask));
+	private void addReplay(float reward , INDArray nextInput , int nextActionMask[]){
+		if( replayMemory.size() >= replayMemoryCapacity)
+			replayMemory.remove( random.nextInt(replayMemory.size()) );
+		replayMemory.add(new Replay(lastInput, lastAction, reward , nextInput , nextActionMask));
 	}
 	
-	Replay[] GetMiniBatch(int BatchSize){
-		int size = ReplayMemory.size() < BatchSize ? ReplayMemory.size() : BatchSize ;
+	private Replay[] getMiniBatch(int batchSize){
+		int size = replayMemory.size() < batchSize ? replayMemory.size() : batchSize ;
 		Replay[] retVal = new Replay[size];
 		
 		for(int i = 0 ; i < size ; i++){
-			retVal[i] = ReplayMemory.get(r.nextInt(ReplayMemory.size()));
+			retVal[i] = replayMemory.get(random.nextInt(replayMemory.size()));
 		}
 		return retVal;
 		
 	}
 	
-	float FindMax(INDArray NetOutputs , int ActionMask[]){
+	private float findMax(INDArray netOutputs , int actionMask[]){
 		int i = 0;
-		while(ActionMask[i] == 0) i++;
+		while(actionMask[i] == 0) i++;
 		
-		float maxVal = NetOutputs.getFloat(i);
-		for(; i < NetOutputs.size(1) ; i++){
-			if(NetOutputs.getFloat(i) > maxVal && ActionMask[i] == 1){
-				maxVal = NetOutputs.getFloat(i);
+		float maxVal = netOutputs.getFloat(i);
+		for(; i < netOutputs.size(1) ; i++){
+			if(netOutputs.getFloat(i) > maxVal && actionMask[i] == 1){
+				maxVal = netOutputs.getFloat(i);
 			}
 		}
 		return maxVal;
 	}
 	
-	int FindActionMax(INDArray NetOutputs , int ActionMask[]){
+	private int findActionMax(INDArray netOutputs , int actionMask[]){
 		int i = 0;
-		while(ActionMask[i] == 0) i++;
+		while(actionMask[i] == 0) i++;
 		
-		float maxVal = NetOutputs.getFloat(i);
+		float maxVal = netOutputs.getFloat(i);
 		int maxValI = i;
-		for(; i < NetOutputs.size(1) ; i++){
-			if(NetOutputs.getFloat(i) > maxVal && ActionMask[i] == 1){
-				maxVal = NetOutputs.getFloat(i);
+		for(; i < netOutputs.size(1) ; i++){
+			if(netOutputs.getFloat(i) > maxVal && actionMask[i] == 1){
+				maxVal = netOutputs.getFloat(i);
 				maxValI = i;
 			}
 		}
@@ -108,83 +103,78 @@ public class DeepQNetwork {
 	}
 	
 	
-	int GetAction(INDArray Inputs , int ActionMask[]){
-		LastInput = Inputs;
-		INDArray outputs = DeepQ.output(Inputs);
-		System.out.print(outputs + " ");
-		if(Epsilon > r.nextDouble()) {
-			 LastAction = r.nextInt(outputs.size(1));
-			 while(ActionMask[LastAction] == 0)
-				 LastAction = r.nextInt(outputs.size(1));
-			 System.out.println(LastAction);
-			 return LastAction;
+	int getAction(INDArray inputs , int actionMask[]){
+		lastInput = inputs;
+		INDArray outputs = deepQ.output(inputs);
+		System.out.print(outputs + "ok ");
+		if(epsilon > random.nextDouble()) {
+			 lastAction = random.nextInt(outputs.size(1));
+			 while(actionMask[lastAction] == 0)
+				 lastAction = random.nextInt(outputs.size(1));
+			 System.out.println(lastAction);
+			 return lastAction;
 		}
 		
-		LastAction = FindActionMax(outputs , ActionMask);
-		System.out.println(LastAction);
-		return LastAction;
+		lastAction = findActionMax(outputs , actionMask);
+		System.out.println(lastAction);
+		return lastAction;
 	}
 	
-	void ObserveReward(float Reward , INDArray NextInputs , int NextActionMask[]){
-		AddReplay(Reward , NextInputs , NextActionMask);
-		if(ReplayStartSize <  ReplayMemory.size())
-			TrainNetwork(BatchSize);
-		UpdateCounter++;
-		if(UpdateCounter == UpdateFreq){
-			UpdateCounter = 0;
+	void observeReward(float reward , INDArray nextInputs , int nextActionMask[]){
+		addReplay(reward , nextInputs , nextActionMask);
+		if(replayStartSize <  replayMemory.size())
+			trainNetwork(batchSize);
+		updateCounter++;
+		if(updateCounter == updateFreq){
+			updateCounter = 0;
 			System.out.println("Reconciling Networks");
-			ReconcileNetworks();
+			reconcileNetworks();
 		}
 	}
 	
-	INDArray CombineInputs(Replay replays[]){
-		INDArray retVal = Nd4j.create(replays.length , InputLength);
+	private INDArray combineInputs(Replay replays[]){
+		INDArray retVal = Nd4j.create(replays.length , inputLength);
 		for(int i = 0; i < replays.length ; i++){
-			retVal.putRow(i, replays[i].Input);
+			retVal.putRow(i, replays[i].input);
 		}
 		return retVal;
 	}
 	
-	INDArray CombineNextInputs(Replay replays[]){
-		INDArray retVal = Nd4j.create(replays.length , InputLength);
+	private INDArray combineNextInputs(Replay replays[]){
+		INDArray retVal = Nd4j.create(replays.length , inputLength);
 		for(int i = 0; i < replays.length ; i++){
-			if(replays[i].NextInput != null)
-				retVal.putRow(i, replays[i].NextInput);
+			if(replays[i].nextInput != null)
+				retVal.putRow(i, replays[i].nextInput);
 		}
 		return retVal;
 	}
-	void TrainNetwork(int BatchSize){
-		Replay replays[] = GetMiniBatch(BatchSize);
-		INDArray CurrInputs = CombineInputs(replays);
-		INDArray TargetInputs = CombineNextInputs(replays);
 
-		float TotalError = 0;
-		
-		INDArray CurrOutputs = DeepQ.output(CurrInputs);
-		INDArray TargetOutputs = TargetDeepQ.output(TargetInputs);
-		float y[] = new float[replays.length];
-		for(int i = 0 ; i < y.length ; i++){
-			int ind[] = { i , replays[i].Action };
+	private void trainNetwork(int batchSize){
+		Replay replays[] = getMiniBatch(batchSize);
+		INDArray CurrInputs = combineInputs(replays);
+		INDArray TargetInputs = combineNextInputs(replays);
+
+        INDArray CurrOutputs = deepQ.output(CurrInputs);
+		INDArray TargetOutputs = targetDeepQ.output(TargetInputs);
+		for(int i = 0 ; i < replays.length; i++){
+			int ind[] = { i , replays[i].action};
 			float FutureReward = 0 ;
-			if(replays[i].NextInput != null)
-				FutureReward = FindMax(TargetOutputs.getRow(i) , replays[i].NextActionMask);
-			float TargetReward = replays[i].Reward + Discount * FutureReward ;
-			TotalError += (TargetReward - CurrOutputs.getFloat(ind)) * (TargetReward - CurrOutputs.getFloat(ind));
-			CurrOutputs.putScalar(ind , TargetReward ) ;
+			if(replays[i].nextInput != null)
+				FutureReward = findMax(TargetOutputs.getRow(i) , replays[i].nextActionMask);
+			float TargetReward = replays[i].reward + discount * FutureReward ;
+            CurrOutputs.putScalar(ind , TargetReward ) ;
 		}
-		//System.out.println("Avgerage Error: " + (TotalError / y.length) );
-		
-		DeepQ.fit(CurrInputs, CurrOutputs);
+		deepQ.fit(CurrInputs, CurrOutputs);
 	}
 	
-	void ReconcileNetworks(){
-		TargetDeepQ.setParams(DeepQ.params());
+	private void reconcileNetworks(){
+		targetDeepQ.setParams(deepQ.params());
 	}
 	
-	public boolean SaveNetwork(String ParamFileName , String JSONFileName){
+	public boolean saveNetwork(String paramFileName , String jsonFileName){
 	    //Write the network parameters:
-	    try(DataOutputStream dos = new DataOutputStream(Files.newOutputStream(Paths.get(ParamFileName)))){
-	        Nd4j.write(DeepQ.params(),dos);
+	    try(DataOutputStream dos = new DataOutputStream(Files.newOutputStream(Paths.get(paramFileName)))){
+	        Nd4j.write(deepQ.params(),dos);
 	    } catch (IOException e) {
 	    	System.out.println("Failed to write params");
 			return false;
@@ -192,7 +182,7 @@ public class DeepQNetwork {
 	    
 	    //Write the network configuration:
 	    try {
-			FileUtils.write(new File(JSONFileName), DeepQ.getLayerWiseConfigurations().toJson());
+			FileUtils.write(new File(jsonFileName), deepQ.getLayerWiseConfigurations().toJson());
 		} catch (IOException e) {
 			System.out.println("Failed to write json");
 			return false;
@@ -200,11 +190,11 @@ public class DeepQNetwork {
 	    return true;
 	}
 	
-	public boolean LoadNetwork(String ParamFileName , String JSONFileName){
+	public boolean loadNetwork(String paramFileName , String jsonFileName){
 		//Load network configuration from disk:
 	    MultiLayerConfiguration confFromJson;
 		try {
-			confFromJson = MultiLayerConfiguration.fromJson(FileUtils.readFileToString(new File(JSONFileName)));
+			confFromJson = MultiLayerConfiguration.fromJson(FileUtils.readFileToString(new File(jsonFileName)));
 		} catch (IOException e1) {
 			System.out.println("Failed to load json");
 			return false;
@@ -212,20 +202,18 @@ public class DeepQNetwork {
 
 	    //Load parameters from disk:
 	    INDArray newParams;
-	    try(DataInputStream dis = new DataInputStream(new FileInputStream(ParamFileName))){
+	    try(DataInputStream dis = new DataInputStream(new FileInputStream(paramFileName))){
 	        newParams = Nd4j.read(dis);
-	    } catch (FileNotFoundException e) {
-	    	System.out.println("Failed to load parems");
-			return false;
-		} catch (IOException e) {
+	    } catch (IOException e) {
 	    	System.out.println("Failed to load parems");
 			return false;
 		}
+
 	    //Create a MultiLayerNetwork from the saved configuration and parameters 
-	    DeepQ = new MultiLayerNetwork(confFromJson); 
-	    DeepQ.init(); 
-	    DeepQ.setParameters(newParams); 
-	    ReconcileNetworks();
+	    deepQ = new MultiLayerNetwork(confFromJson);
+	    deepQ.init();
+	    deepQ.setParameters(newParams);
+	    reconcileNetworks();
 	    return true;
 	    
 	}
