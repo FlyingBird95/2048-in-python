@@ -23,6 +23,12 @@
 
         <dependency>
             <groupId>org.deeplearning4j</groupId>
+            <artifactId>deeplearning4j-ui_2.11</artifactId>
+            <version>LATEST</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.deeplearning4j</groupId>
             <artifactId>rl4j-core</artifactId>
             <version>LATEST</version>
         </dependency>
@@ -33,11 +39,6 @@
             <version>LATEST</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.datavec</groupId>
-            <artifactId>datavec-api</artifactId>
-            <version>LATEST</version>
-        </dependency>
 
         <!-- for running tests -->
         <dependency>
@@ -62,5 +63,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
