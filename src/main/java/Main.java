@@ -48,14 +48,14 @@ public class Main {
     public static QLearning.QLConfiguration TOY_QL =
             new QLearning.QLConfiguration(
                     123,    //Random seed
-                    200,    //Max step By epoch
-                    150000, //Max step
-                    150000, //Max size of experience replay
+                    20000,    //Max step By epoch
+                    15000000, //Max step
+                    15000000, //Max size of experience replay
                     32,     //size of batches
-                    500,    //target update (hard)
+                    5000,   //target update (hard)
                     0,      //num step noop warmup   - The game only updates after doing a move.
-                    0.01,   //reward scaling
-                    0.99,   //gamma
+                    0.001,   //reward scaling
+                    0.9,   //gamma
                     1.0,    //td-error clipping
                     0.1f,   //min epsilon
                     1000,   //num step for eps greedy anneal
