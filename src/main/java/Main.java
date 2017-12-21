@@ -46,19 +46,19 @@ public class Main {
 
     public static DQNFactoryStdDense.Configuration TOY_NET =
             DQNFactoryStdDense.Configuration.builder()
-                    .l2(0.001).learningRate(0.0005).numHiddenNodes(16).numLayer(3).build();
+                    .l2(0.001).learningRate(0.01).numHiddenNodes(256).numLayer(2).build();
 
     public static QLearning.QLConfiguration TOY_QL =
             new QLearning.QLConfiguration(
                     123,    //Random seed
                     20000,    //Max step By epoch
-                    150000, //Max step
+                    50000, //Max step
                     150000, //Max size of experience replay
-                    32,     //size of batches
+                    100,     //size of batches
                     500,    //target update (hard)
                     0,      //num step noop warmup   - The game only updates after doing a move.
-                    0.01,   //reward scaling
-                    0.99,   //gamma
+                    1,   //reward scaling
+                    0,   //gamma
                     1.0,    //td-error clipping
                     0.1f,   //min epsilon
                     1000,   //num step for eps greedy anneal

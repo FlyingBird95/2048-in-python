@@ -33,7 +33,27 @@ public class Model implements Encodable {
 
     @Override
     public double[] toArray() {
-        return Arrays.stream(this.values).asDoubleStream().toArray();
+        int[] VALUES = new int[]{2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 0};
+
+        double[] array = new double[this.values.length * VALUES.length];
+
+        for(int i = 0; i<values.length; i++){
+            double[] bitarray = getBitArray(this.values[i], VALUES);
+            for(int j = 0; j<bitarray.length; j++){
+                array[i*VALUES.length + j] = bitarray[j];
+            }
+        }
+
+        System.out.println(ArrayUtils.toString(array));
+        return array;
+    }
+
+    private double[] getBitArray(int value, int[] values) {
+        double[] array = new double[values.length];
+        for(int i = 0; i<values.length; i++){
+            array[i] = (values[i] == value) ? 1 : 0;
+        }
+        return array;
     }
 
     public Model clone(){
