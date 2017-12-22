@@ -28,8 +28,16 @@ public interface Trainable {
      */
     float getReward();
 
+    /**
+     * Encoding of the model
+     * @return
+     */
     INDArray toArray();
 
+    /**
+     * Boolean that tells if actions can be taken further
+     * @return
+     */
     boolean hasTerminated();
 
 }

@@ -106,7 +106,7 @@ public class DeepQNetwork {
 	int getAction(INDArray inputs , int actionMask[]){
 		lastInput = inputs;
 		INDArray outputs = deepQ.output(inputs);
-		System.out.print(outputs + "ok ");
+		System.out.print(outputs + " ");
 		if(epsilon > random.nextDouble()) {
 			 lastAction = random.nextInt(outputs.size(1));
 			 while(actionMask[lastAction] == 0)

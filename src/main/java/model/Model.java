@@ -53,7 +53,7 @@ public class Model implements Trainable {
 
     @Override
     public float getReward() {
-        return reward;
+        return totalScore;
     }
 
     @Override
