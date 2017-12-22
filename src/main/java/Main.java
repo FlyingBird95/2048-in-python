@@ -1,8 +1,10 @@
-import controller.Controller;
+import model.Model;
+import rl.TestRL;
 
 public class Main {
 
     public static void main(String[] args) throws Exception{
-        Controller.getInstance();
+        TestRL<Model> test = new TestRL<>();
+        test.train();
     }
 }

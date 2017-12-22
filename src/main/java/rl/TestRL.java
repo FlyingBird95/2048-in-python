@@ -1,6 +1,5 @@
 package rl;
 
-import controller.Controller;
 import controller.GameLogic;
 import model.Model;
 import org.deeplearning4j.nn.api.OptimizationAlgorithm;
@@ -11,23 +10,26 @@ import org.deeplearning4j.nn.conf.layers.DenseLayer;
 import org.deeplearning4j.nn.conf.layers.OutputLayer;
 import org.deeplearning4j.nn.weights.WeightInit;
 import org.nd4j.linalg.lossfunctions.LossFunctions.LossFunction;
+import view.View;
+
+import java.lang.reflect.Array;
+import java.util.Arrays;
 
 public class TestRL<M extends Trainable> {
 
     private DeepQNetwork deepQNetwork;
-	private int size = 4;
 
     private void initNet(){
 		
 		int inputLength = 16; // must be equal to the number of values that are
-        // inserted using the toArray-function from Trainable
+        // inserted using the encode-function from Trainable
 		int hiddenLayerCount = 150;
 
         MultiLayerConfiguration conf1 = new NeuralNetConfiguration.Builder()
        		 .seed(123)
 	             .iterations(1)
 	             .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
-	             .learningRate(0.0025)
+	             .learningRate(0.025)
 	             .updater(Updater.NESTEROVS)
 	             .list()
 	             .layer(0, new DenseLayer.Builder().nIn(inputLength).nOut(hiddenLayerCount)
@@ -45,49 +47,31 @@ public class TestRL<M extends Trainable> {
 
 
 	public void train() {
-		initNet() ;
+		initNet();
 
-        /*
-         * I guess this is for training
-         */
-        for(int m = 0; m < 1500; m++){
-			System.out.println("Episode: " + m) ;
-
-            for(int i = 0 ; i < 2*size ; i ++){
-                Trainable model = Controller.getInstance().getModel();
-				int a = deepQNetwork.getAction(model.toArray(), model.getActionMask()) ;
-                Model newModel = (Model) model.doMove(a);
-				float r = newModel.getReward();
-                if(newModel.hasTerminated()){
-					deepQNetwork.observeReward(r, null , newModel.getActionMask());
-                    Controller.getInstance().setModel(GameLogic.newModel());
-					break;
-				}
-				deepQNetwork.observeReward(r, newModel.toArray(), newModel.getActionMask());
-				Controller.getInstance().setModel(newModel);
-			}
-		}
-
-
-        /*
-         * I guess this is for testing
-         */
-        deepQNetwork.setEpsilon(0); // this implies to not train anymore
-		for(int m = 0 ; m < 100 ; m++){
-            float tReward = 0;
-			while(true){
-				int a = deepQNetwork.getAction(Controller.getInstance().getModel().toArray(),
-                        Controller.getInstance().getModel().getActionMask()) ;
-				Model newModel = (Model) Controller.getInstance().getModel().doMove(a);
-				float r = newModel.getReward();
-				tReward += r;
-                deepQNetwork.observeReward(r, newModel.toArray() , newModel.getActionMask());
-				if(newModel.hasTerminated()) {
-                    break;
-                }
-				Controller.getInstance().setModel(newModel);
-			}
-			System.out.println("Net Score: " + (tReward));
-		}
+        System.out.println("Average training score: " + run(100));
+        deepQNetwork.setEpsilon(0);
+        System.out.println("Average testing score: " + run(100));
 	}
+
+    private float run(int n){
+        float totalScore = 0;
+        for(int i = 0; i<n; i++){
+            Trainable model = GameLogic.newModel();
+            while(!model.hasTerminated()){
+                int a = deepQNetwork.getAction(model.encode(), model.getActionMask());
+                Model newModel = (Model) model.doMove(a);
+                float r = newModel.getReward();
+                try {
+                    deepQNetwork.observeReward(r, model.encode(), model.getActionMask());
+                } catch(ArrayIndexOutOfBoundsException e){
+                    System.out.println("for some reason this error: " + e.getMessage());
+                }
+                model = newModel;
+                View.getInstance().update((Model) model);
+            }
+            totalScore = model.getScore();
+        }
+        return totalScore / n;
+    }
 }

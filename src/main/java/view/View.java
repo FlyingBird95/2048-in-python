@@ -1,17 +1,12 @@
 package view;
 
-import Util.MoveUtil;
-import controller.Controller;
 import controller.GameLogic;
 import model.Model;
-import org.apache.commons.lang3.ArrayUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
 
-public class View extends JPanel implements Observer{
+public class View extends JPanel {
 
     private static final String TITLE = "2048 Game";
     private static final String FONT_NAME = "Arial";
@@ -23,6 +18,15 @@ public class View extends JPanel implements Observer{
     private static final int HEIGHT = 400;
 
     private Model model;
+
+    private static View instance;
+
+    public static View getInstance(){
+        if (instance == null){
+            instance = View.createView();
+        }
+        return instance;
+    }
 
     /**
      * Creates the view
@@ -142,11 +146,8 @@ public class View extends JPanel implements Observer{
         g.drawString("Score: " + score, 200, 365);
     }
 
-    @Override
-    public void update(Observable observable, Object o) {
-        if (o instanceof Model){
-            this.model = (Model) o;
-        }
+    public void update(Model model) {
+        this.model = model;
         repaint();
     }
 }

@@ -1,10 +1,9 @@
 package model;
 
 import Util.MoveUtil;
-import controller.Controller;
 import controller.GameLogic;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.NotImplementedException;
+import org.deeplearning4j.rl4j.space.Encodable;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 import rl.Trainable;
@@ -53,20 +52,29 @@ public class Model implements Trainable {
 
     @Override
     public float getReward() {
+        return reward;
+    }
+
+    @Override
+    public float getScore(){
         return totalScore;
     }
 
     @Override
-    public INDArray toArray() {
-        float[] array = new float[values.length];
-        for(int i = 0; i<values.length; i++){
-            array[i] = values[i];
-        }
-        return Nd4j.create(array);
+    public INDArray encode() {
+        return Nd4j.create(toArray());
     }
 
     @Override
     public boolean hasTerminated(){
         return GameLogic.hasWon(this) || GameLogic.hasLost(this);
+    }
+
+    public double[] toArray() {
+        double[] array = new double[values.length];
+        for(int i = 0; i<values.length; i++){
+            array[i] = values[i];
+        }
+        return array;
     }
 }
