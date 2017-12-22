@@ -137,9 +137,21 @@ public class GameLogic {
         return output;
     }
 
+    /**
+     * The order of the returned values are: [UP, RIGHT, DOwN, LEFT]
+     * @return values of the array are: 1 if that move is possible, 0 otherwise
+     */
+    public static int[] getActionMask(Model model){
+        int[] array = new int[]{0, 0, 0, 0};
+        for(MoveUtil.Move m : getPossibleMoves(model)){
+            array[MoveUtil.moveToInt(m)] = 1;
+        }
+        return array;
+    }
+
     public static MoveUtil.Move[] getPossibleMoves(Model model){
         if(!isFull(model)) {
-            return new MoveUtil.Move[]{MoveUtil.Move.LEFT, MoveUtil.Move.RIGHT, MoveUtil.Move.UP, MoveUtil.Move.DOWN};
+            return new MoveUtil.Move[]{MoveUtil.Move.UP, MoveUtil.Move.DOWN, MoveUtil.Move.RIGHT, MoveUtil.Move.LEFT};
         }
 
         boolean horizontal = isMovePossible(model);
@@ -148,13 +160,13 @@ public class GameLogic {
         rotate(model,270);
 
         if(vertical && horizontal) {
-            return new MoveUtil.Move[]{MoveUtil.Move.LEFT, MoveUtil.Move.RIGHT, MoveUtil.Move.UP, MoveUtil.Move.DOWN};
+            return new MoveUtil.Move[]{MoveUtil.Move.UP, MoveUtil.Move.DOWN, MoveUtil.Move.RIGHT, MoveUtil.Move.LEFT};
         }
-        if(vertical) {
+            if(vertical) {
             return new MoveUtil.Move[]{MoveUtil.Move.UP, MoveUtil.Move.DOWN};
         }
         if(horizontal) {
-            return new MoveUtil.Move[]{MoveUtil.Move.LEFT, MoveUtil.Move.RIGHT};
+            return new MoveUtil.Move[]{MoveUtil.Move.RIGHT, MoveUtil.Move.LEFT};
         }
 
         return new MoveUtil.Move[]{};
@@ -174,7 +186,7 @@ public class GameLogic {
     }
 
 
-    public static boolean isFull(Model model) {
+    private static boolean isFull(Model model) {
         return !ArrayUtils.contains(model.values, 0);
     }
 
@@ -183,6 +195,6 @@ public class GameLogic {
     }
 
     public static boolean hasLost(Model model) {
-        return isFull(model);
+        return getPossibleMoves(model).length == 0;
     }
 }

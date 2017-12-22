@@ -1,5 +1,6 @@
 package rl;
 
+import Util.Plot;
 import controller.GameLogic;
 import model.Model;
 import org.deeplearning4j.nn.api.OptimizationAlgorithm;
@@ -13,7 +14,10 @@ import org.nd4j.linalg.lossfunctions.LossFunctions.LossFunction;
 import view.View;
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 public class TestRL<M extends Trainable> {
 
@@ -29,7 +33,7 @@ public class TestRL<M extends Trainable> {
        		 .seed(123)
 	             .iterations(1)
 	             .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
-	             .learningRate(0.025)
+	             .learningRate(0.1)
 	             .updater(Updater.NESTEROVS)
 	             .list()
 	             .layer(0, new DenseLayer.Builder().nIn(inputLength).nOut(hiddenLayerCount)
@@ -42,36 +46,47 @@ public class TestRL<M extends Trainable> {
 	                        .nIn(hiddenLayerCount).nOut(4).build())
 	             .pretrain(false).backprop(true).build();
 
-		deepQNetwork = new DeepQNetwork(conf1 ,  100000 , .99f , 1d , 1024 , 500 , 1024 , inputLength);
+		deepQNetwork = new DeepQNetwork(conf1,
+                100000,
+                .9f,
+                .01d,
+                1024,
+                500,
+                1024,
+                inputLength);
 	}
 
 
 	public void train() {
 		initNet();
 
-        System.out.println("Average training score: " + run(100));
-        deepQNetwork.setEpsilon(0);
-        System.out.println("Average testing score: " + run(100));
-	}
+		List<Double> trainScores = run(100);
+        System.out.println("Average training score: " + getAverage(trainScores));
+        Plot.createPlot(trainScores, "train scores");
+    }
 
-    private float run(int n){
-        float totalScore = 0;
+	private static double getAverage(List<Double> list){
+        double sum = 0;
+        for(double d : list){
+            sum += d;
+        }
+        return sum / list.size();
+    }
+
+    private List<Double> run(int n){
+        List<Double> scores = new ArrayList<>();
         for(int i = 0; i<n; i++){
             Trainable model = GameLogic.newModel();
             while(!model.hasTerminated()){
                 int a = deepQNetwork.getAction(model.encode(), model.getActionMask());
                 Model newModel = (Model) model.doMove(a);
                 float r = newModel.getReward();
-                try {
-                    deepQNetwork.observeReward(r, model.encode(), model.getActionMask());
-                } catch(ArrayIndexOutOfBoundsException e){
-                    System.out.println("for some reason this error: " + e.getMessage());
-                }
+                deepQNetwork.observeReward(r, model.encode(), model.getActionMask());
                 model = newModel;
                 View.getInstance().update((Model) model);
             }
-            totalScore = model.getScore();
+            scores.add((double) model.getScore());
         }
-        return totalScore / n;
+        return scores;
     }
 }

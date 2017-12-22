@@ -56,7 +56,13 @@ public class DeepQNetwork {
 	void setEpsilon(double e){
 		epsilon = e;
 	}
-	
+
+    /**
+     * Store replay in memory
+     * @param reward reward value to be stored
+     * @param nextInput encoding of the model
+     * @param nextActionMask next possible values
+     */
 	private void addReplay(float reward , INDArray nextInput , int nextActionMask[]){
 		if( replayMemory.size() >= replayMemoryCapacity)
 			replayMemory.remove( random.nextInt(replayMemory.size()) );
@@ -106,20 +112,22 @@ public class DeepQNetwork {
 	int getAction(INDArray inputs , int actionMask[]){
 		lastInput = inputs;
 		INDArray outputs = deepQ.output(inputs);
-		System.out.print(outputs + " ");
 		if(epsilon > random.nextDouble()) {
 			 lastAction = random.nextInt(outputs.size(1));
 			 while(actionMask[lastAction] == 0)
 				 lastAction = random.nextInt(outputs.size(1));
-			 System.out.println(lastAction);
 			 return lastAction;
 		}
 		
-		lastAction = findActionMax(outputs , actionMask);
-		System.out.println(lastAction);
-		return lastAction;
+		return findActionMax(outputs , actionMask);
 	}
-	
+
+	/**
+	 *
+	 * @param reward reward of the last move
+	 * @param nextInputs encoding of the model
+	 * @param nextActionMask next possible moves
+	 */
 	void observeReward(float reward , INDArray nextInputs , int nextActionMask[]){
 		addReplay(reward , nextInputs , nextActionMask);
 		if(replayStartSize <  replayMemory.size())
@@ -127,7 +135,6 @@ public class DeepQNetwork {
 		updateCounter++;
 		if(updateCounter == updateFreq){
 			updateCounter = 0;
-			System.out.println("Reconciling Networks");
 			reconcileNetworks();
 		}
 	}

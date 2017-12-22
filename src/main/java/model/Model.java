@@ -15,6 +15,7 @@ public class Model implements Trainable {
     public int[] values;
     public int totalScore;
     public int reward;
+    private MoveUtil.Move lastMove;
 
     public static final int SIZE = 4;
 
@@ -22,6 +23,7 @@ public class Model implements Trainable {
         this.values = new int[SIZE * SIZE];
         this.totalScore = 0;
         this.reward = 0;
+        lastMove = null;
     }
 
     @Override
@@ -34,30 +36,36 @@ public class Model implements Trainable {
         m.values = ArrayUtils.clone(this.values);
         m.totalScore = this.totalScore;
         m.reward = this.reward;
+        m.lastMove = this.lastMove;
         return m;
     }
 
     @Override
     public int[] getActionMask() {
-        return MoveUtil.toIntArray(GameLogic.getPossibleMoves(this));
+        return GameLogic.getActionMask(this);
 
     }
 
     @Override
     public Trainable doMove(int move) {
         Model model = GameLogic.doMove(this, MoveUtil.getMove(move));
+        model.lastMove = MoveUtil.getMove(move);
         GameLogic.addTile(model);
         return model;
     }
 
     @Override
     public float getReward() {
-        return reward;
+        return totalScore;
     }
 
     @Override
     public float getScore(){
-        return totalScore;
+        float max = 0;
+        for(float f : values) {
+            max = Math.max(f, max);
+        }
+        return max;
     }
 
     @Override
@@ -70,7 +78,7 @@ public class Model implements Trainable {
         return GameLogic.hasWon(this) || GameLogic.hasLost(this);
     }
 
-    public double[] toArray() {
+    private double[] toArray() {
         double[] array = new double[values.length];
         for(int i = 0; i<values.length; i++){
             array[i] = values[i];
