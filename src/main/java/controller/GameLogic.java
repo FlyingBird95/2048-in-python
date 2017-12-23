@@ -197,4 +197,12 @@ public class GameLogic {
     public static boolean hasLost(Model model) {
         return getPossibleMoves(model).length == 0;
     }
+
+    public static boolean isDone(Model model){
+        return hasWon(model) || hasLost(model);
+    }
+
+    public static double getReward(Model model){
+        return model.reward;
+    }
 }
