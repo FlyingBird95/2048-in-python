@@ -44,7 +44,7 @@ public class Model implements Encodable {
             }
         }
 
-        System.out.println(ArrayUtils.toString(array));
+//        System.out.println(ArrayUtils.toString(array));
         return array;
     }
 

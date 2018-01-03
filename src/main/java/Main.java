@@ -1,5 +1,13 @@
 import Util.Plot;
 import controller.Controller;
+import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
+import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
+import org.deeplearning4j.nn.conf.layers.DenseLayer;
+import org.deeplearning4j.nn.conf.layers.OutputLayer;
+import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
+import org.deeplearning4j.rl4j.network.dqn.DQN;
+import org.nd4j.linalg.activations.Activation;
+import org.nd4j.linalg.lossfunctions.LossFunctions;
 import rl4j.MDP2048;
 import model.Model;
 import org.deeplearning4j.rl4j.learning.Learning;
@@ -33,20 +41,42 @@ public class Main {
 //        view.addKeyListener(view.getKeyListener());
 
 
-        DataManager manager = new DataManager(true);
+        DataManager manager = new DataManager(false);
         MDP2048 mdp = new MDP2048(controller);
+
+        final int numRows = 28;
+        final int numColumns = 28;
+        int outputNum = 16; // number of output classes
+        MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder()
+                .seed(123)
+                .activation(Activation.RELU)
+                .learningRate(0.001)
+                .regularization(true).l2(0.001 * 0.005) // regularize learning model
+                .list()
+                .layer(0, new DenseLayer.Builder() //create the first input layer.
+                        .nIn(numRows * numColumns)
+                        .nOut(500)
+                        .build())
+                .layer(1, new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD) //create hidden layer
+                        .activation(Activation.SOFTMAX)
+                        .nIn(100)
+                        .nOut(outputNum)
+                        .build())
+                .build();
+        MultiLayerNetwork mln = new MultiLayerNetwork(conf);
+        DQN dqn = new DQN(mln);
 
         // Learning methods
         Learning<Model, Integer, DiscreteSpace, IDQN> dql =
-                new QLearningDiscreteDense<>(mdp, TOY_NET, TOY_QL, manager);
+                new QLearningDiscreteDense<>(mdp, dqn, TOY_QL, manager);
         dql.train();
 
-        Plot.createPlot(manager);
+        //Plot.createPlot(manager);
     }
 
     public static DQNFactoryStdDense.Configuration TOY_NET =
             DQNFactoryStdDense.Configuration.builder()
-                    .l2(0.001).learningRate(0.01).numHiddenNodes(256).numLayer(2).build();
+                    .l2(0.001).learningRate(0.01).numHiddenNodes(128).numLayer(2).build();
 
     public static QLearning.QLConfiguration TOY_QL =
             new QLearning.QLConfiguration(
