@@ -20,6 +20,9 @@ public class MoveUtil {
     }
 
     public static int moveToInt(Move move){
+        if (move == null){
+            return -1;
+        }
         switch (move){
             case UP: return 0;
             case RIGHT: return 1;

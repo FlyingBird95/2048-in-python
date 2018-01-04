@@ -153,6 +153,12 @@ public class Plot extends JPanel {
         createPlot(manager.getStat());
     }
 
+    public static void createPlot(List<Double> dataPoints, String title){
+        SwingUtilities.invokeLater(() -> {
+            createAndShowGui(dataPoints, title);
+        });
+    }
+
     private static void createPlot(String path) throws IOException {
         ArrayList<Double> rewardValues = new ArrayList<>();
         ArrayList<Double> episodeLengthValues = new ArrayList<>();

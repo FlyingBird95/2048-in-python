@@ -1,65 +1,63 @@
 package rl4j;
 
 import Util.MoveUtil;
-import controller.Controller;
+import controller.GameLogic;
 import model.Model;
 import org.deeplearning4j.gym.StepReply;
 import org.deeplearning4j.rl4j.mdp.MDP;
 import org.deeplearning4j.rl4j.space.DiscreteSpace;
 import org.deeplearning4j.rl4j.space.ObservationSpace;
 import org.json.JSONObject;
+import view.View;
 
-public class MDP2048 implements MDP<Model, Integer, DiscreteSpace>{
+public class MDP2048 implements MDP<Model, Integer, DiscreteSpace> {
 
-    private Controller controller;
-    private MoveSpace moveSpace;
-    private ObservationSpace<Model> observationSpace;
+    private Model model;
 
-    public MDP2048(Controller controller){
-        this.controller = controller;
-        this.observationSpace = new ObservationSpace2048(this.controller.model);
-        this.moveSpace = new MoveSpace(this.controller);
+    public MDP2048(Model model){
+        this.model = model;
     }
 
     @Override
     public ObservationSpace<Model> getObservationSpace() {
-        return this.observationSpace;
+        return new ObservationSpace2048();
     }
 
     @Override
-    public DiscreteSpace getActionSpace() {
-        return this.moveSpace;
+    public MoveSpace getActionSpace() {
+        return new MoveSpace();
     }
 
     @Override
     public Model reset() {
-        this.controller.resetModel();
-        return this.controller.model;
+        this.model = GameLogic.newModel();
+        return this.model;
     }
 
     @Override
     public void close() {
+        throw new RuntimeException("Method not implemented");
     }
 
     @Override
-    public StepReply<Model> step(Integer integer) {
-        controller.doMove(MoveUtil.getMove(integer));
-        return new StepReply<>(
-                this.controller.model,
-                controller.model.lose ? -1 : 0,
-                this.isDone(),
-                new JSONObject("{}")
-        );
+    public StepReply<Model> step(Integer action) {
+        Model newModel = GameLogic.doMove(model, MoveUtil.getMove(action));
+        GameLogic.addTile(newModel);
+        View.getInstance().update(newModel);
+        model = newModel;
+        return new StepReply<>(newModel,
+                GameLogic.getReward(newModel),
+                GameLogic.isDone(newModel),
+                new JSONObject("{}"));
     }
 
     @Override
     public boolean isDone() {
-        return this.controller.model.win || this.controller.model.lose;
+        return GameLogic.isDone(model);
     }
 
     @Override
-    public MDP2048 newInstance() {
-        //throw new RuntimeException("test");
-        return new MDP2048(this.controller.clone());
+    public MDP<Model, Integer, DiscreteSpace> newInstance() {
+        return new MDP2048(GameLogic.newModel());
     }
 }
