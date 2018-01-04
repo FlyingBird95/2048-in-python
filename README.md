@@ -14,3 +14,6 @@ The code is created using Maven. Therefore, you first have to install the right 
     mvn clean install
 
 After installation is succesful, the code starts at the main, located in [src/main/java/Main.java](src/main/java/Main.java).
+
+# Python
+As you might have notices, there is a 'python'-folder. This folder uses a second approach, since the Java-implementation doesn't correctly work at the moment. See [this file](python/) for more information.
