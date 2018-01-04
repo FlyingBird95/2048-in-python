@@ -8,17 +8,6 @@ A scoreboard on the upper-right keeps track of the user's score. The user's scor
 
 The game is won when a tile with a value of 2048 appears on the board, hence the name of the game. After reaching the 2048 tile, players can continue to play (beyond the 2048 tile) to reach higher scores. When the player has no legal moves (there are no empty spaces and no adjacent tiles with the same value), the game ends.
 
-# How does our program work?
-The implementation consists the following packages:
- - controller: contains the Controller-class, which has implemented the logic of the game.
- - model: contains the model of the 2048 game. That is, only the data itself.
- - rl4j: contains the code for the Reinforcement Learning Algorithm. This package consists of the following classes:
-   - MDP2048: which is the actual RL-Algorithm.
-   - MoveSpace: which implements what moves can be made.
-   - ObservationSpace2048: I've no idea what this class does ;)
- - util: Which contains an Enum for the possible moves.
- - view: This is used to render the view.
- - Main (Class): for starting the program.
 # How to run the code?
 The code is created using Maven. Therefore, you first have to install the right dependencies:
     
