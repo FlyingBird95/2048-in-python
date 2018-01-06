@@ -162,7 +162,7 @@ public class GameLogic {
         if(vertical && horizontal) {
             return new MoveUtil.Move[]{MoveUtil.Move.UP, MoveUtil.Move.DOWN, MoveUtil.Move.RIGHT, MoveUtil.Move.LEFT};
         }
-            if(vertical) {
+        if(vertical) {
             return new MoveUtil.Move[]{MoveUtil.Move.UP, MoveUtil.Move.DOWN};
         }
         if(horizontal) {
