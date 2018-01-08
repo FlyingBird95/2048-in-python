@@ -1,6 +1,7 @@
 """Game class to represent 2048 game state."""
 
 import numpy as np
+from py_2048_rl.game.board import board
 
 ACTION_NAMES = ["left", "up", "right", "down"]
 ACTION_LEFT = 0
@@ -11,10 +12,7 @@ ACTION_DOWN = 3
 class Game(object):
   """Represents a 2048 Game state and implements the actions.
 
-  Implements the 2048 Game logic, as specified by this source file:
-  https://github.com/gabrielecirulli/2048/blob/master/js/game_manager.js
-
-  Game states are represented as shape (4, 4) numpy arrays whos entries are 0
+  Game states are represented as shape (4, 4) numpy arrays who s entries are 0
   for empty fields and ln2(value) for any tiles.
   """
 
@@ -89,6 +87,8 @@ class Game(object):
     self._score += reward
 
     self.add_random_tile()
+
+    board.update_grid_cells(self.state())
 
     return reward
 
