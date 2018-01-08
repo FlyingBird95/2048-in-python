@@ -1,6 +1,6 @@
 from py_2048_rl.game.model import Model
 from py_2048_rl.game.controller import Controller
-from py_2048_rl.game.ModelInfo import ModelInfo
+from py_2048_rl.game.modelInfo import ModelInfo
 import numpy as np
 
 m = Model(None, 1)
@@ -57,4 +57,5 @@ c.get_model().print_state()
 
 
 xxx = ModelInfo.win(m)
+zzz = ModelInfo.lose(m)
 yyy = 16
