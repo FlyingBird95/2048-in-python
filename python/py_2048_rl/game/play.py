@@ -20,8 +20,7 @@ class Experience(object):
       state: Shape (4, 4) numpy array, the state before the action was executed
       action: Number in range(4), action that was taken
       reward: Number, experienced reward
-      next_state: Shape (4, 4) numpy array, the state after the action was
-          executed
+      next_state: Shape (4, 4) numpy array, the state after the action was executed
       game_over: boolean, whether next_state is a terminal state
       not_available: boolean, whether action was not available from state
       next_state_available_actions: Available actions from the next state

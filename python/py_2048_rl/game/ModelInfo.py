@@ -8,7 +8,8 @@ class ModelInfo:
     return model.__contains__(2024)
 
   @staticmethod
-  def lose(model): pass
+  def lose(model):
+    return ModelInfo.get_possible_moves(model) == 0
 
   @staticmethod
   def __is_move_possible(model):
