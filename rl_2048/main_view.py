@@ -21,10 +21,10 @@ INPUT_Y = 100
 BUTTON_TRAIN_POS = (50, 200)
 BUTTON_TRAIN_LABEL = "Start training"
 
-BUTTON_PLAY_POS = (300, 200)
+BUTTON_PLAY_POS = (int(WIDTH/2), 200)
 BUTTON_PLAY_LABEL = "Play a single game"
 
-BUTTON_TENSORBOARD_POS = (550, 200)
+BUTTON_TENSORBOARD_POS = (WIDTH-50, 200)
 BUTTON_TENSORBOARD_LABEL = "Start tensorboard"
 
 
@@ -44,11 +44,12 @@ class Window(Frame):
 		self.add_title(TITLE, TITLE_Y)
 		self.input_box = self.add_input_box(INPUT_LABEL, INPUT_Y, DEFAULT_VALUE)
 
-		self.add_button(BUTTON_TRAIN_LABEL, BUTTON_TRAIN_POS, command=self.command_train)
-		self.add_button(BUTTON_PLAY_LABEL, BUTTON_PLAY_POS, command=self.command_play)
-		self.add_button(BUTTON_TENSORBOARD_LABEL, BUTTON_TENSORBOARD_POS, command=self.command_tensorboard)
+		self.add_button(BUTTON_TRAIN_LABEL, BUTTON_TRAIN_POS, "nw", command=self.command_train)
+		self.add_button(BUTTON_PLAY_LABEL, BUTTON_PLAY_POS, "n", command=self.command_play)
+		self.add_button(BUTTON_TENSORBOARD_LABEL, BUTTON_TENSORBOARD_POS, "ne", command=self.command_tensorboard)
 
 		self.log_text = self.add_log()
+		self.log('Program initialised')
 
 	def get_train_dir(self):
 		return str(self.input_box.get())
@@ -71,16 +72,16 @@ class Window(Frame):
 		input_box.place(x=WIDTH/2, y=y+30, anchor="center")
 		return input_box
 
-	def add_button(self, text, position, command):
+	def add_button(self, text, position, anchor, command):
 		button = Button(self, text=text, command=command, font=INPUT_FONT)
 		x, y = position
-		button.place(x=x, y=y)
+		button.place(x=x, y=y, anchor=anchor)
 
 	def add_log(self):
 		label = Label(self.master, text="Log:", font=INPUT_FONT)
-		label.place(x=10, y=HEIGHT/2+50)
+		label.place(x=10, y=HEIGHT/2+70)
 
-		log_text = ScrolledText(self.master, width=WIDTH, height=HEIGHT/2-100)
+		log_text = ScrolledText(self.master, width=111, height=12)
 		log_text.configure(state="disabled")
 		log_text.place(x=0, y=HEIGHT/2+100)
 		return log_text
@@ -88,24 +89,26 @@ class Window(Frame):
 	def log(self, text):
 		""" add a line to the log """
 		from tkinter.constants import END
-		# self.log_text.config(state=NORMAL)
-		self.log_text.insert(END, text)
-		# self.log_text.config(state=DISABLED)
+		self.log_text.configure(state="normal")
+		self.log_text.insert(END, text + '\n')
+		self.log_text.see('end')
+		self.log_text.configure(state="disabled")
 
 	def command_train(self):
 		""" command for starting the training """
-
+		self.log('Starting with the training')
 		from rl_2048.learning.learning import run_training
 		run_training(self.get_train_dir())
 
 	def command_play(self):
 		""" command for playing a single game """
-
+		self.log('Playing a single game')
 		from rl_2048.play_game import play_single_game
 		play_single_game(self.get_train_dir())
 
 	def command_tensorboard(self):
 		""" command for starting the tensorboard server """
+		self.log('Starting tensorboard')
 
 		def launch_tensor_board():
 			import os
@@ -119,6 +122,7 @@ def main():
 	""" Create the view """
 	root = Tk()
 	root.geometry(str(WIDTH) + "x" + str(HEIGHT))
+	root.resizable(False, False)
 	Window(root)
 	root.mainloop()
 
