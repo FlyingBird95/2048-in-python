@@ -28,8 +28,8 @@ class Game(object):
         """
 
         self._score = initial_score
-        self.root = Tk()
-        self.board = Board(self.root)
+        # self.root = Tk()
+        # self.board = Board(self.root)
 
         if state is None:
             self._state = np.zeros((4, 4), dtype=np.int)
@@ -49,7 +49,7 @@ class Game(object):
         for action in range(4):
             if self.is_action_available(action):
                 return False
-        self.root.destroy()
+        # self.root.destroy()
         return True
 
     def available_actions(self):
@@ -87,7 +87,7 @@ class Game(object):
         self._state = np.rot90(temp_state, -action)
         self._score += reward
 
-        self.board.update_grid_cells(self.state())
+        # self.board.update_grid_cells(self.state())
 
         self.add_random_tile()
         return reward
