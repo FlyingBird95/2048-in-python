@@ -1,7 +1,7 @@
 """Game class to represent 2048 game state."""
 
 import numpy as np
-from py_2048_rl.game.board import board
+#from py_2048_rl.game.board import board
 
 ACTION_NAMES = ["left", "up", "right", "down"]
 ACTION_LEFT = 0
@@ -88,7 +88,7 @@ class Game(object):
 
     self.add_random_tile()
 
-    board.update_grid_cells(self.state())
+    #board.update_grid_cells(self.state())
 
     return reward
 

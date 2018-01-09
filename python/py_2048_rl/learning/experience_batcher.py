@@ -20,7 +20,7 @@ BATCHES_KEEP_CONSTANT = 1e3
 # Parameters for epsilon (for epsilon-greedy play)
 START_DECREASE_EPSILON_GAMES = 200000
 DECREASE_EPSILON_GAMES = 100000.0
-MIN_EPSILON = 1.0
+MIN_EPSILON = 0.1
 
 
 class ExperienceBatcher(object):

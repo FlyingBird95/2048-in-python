@@ -12,12 +12,12 @@ NUM_ACTIONS = 4
 # Number of hidden units in each hidden layer
 HIDDEN_SIZES = [256, 256]
 
-OPTIMIZER_CLASS = tf.train.AdamOptimizer
+OPTIMIZER_CLASS = tf.train.GradientDescentOptimizer
 ACTIVATION_FUNCTION = tf.nn.relu
 WEIGHT_INIT_SCALE = 0.01
 
 # Learning Rate Parameters
-INIT_LEARNING_RATE = 1e-4
+INIT_LEARNING_RATE = 1e-2
 LR_DECAY_PER_100K = 0.98
 
 
