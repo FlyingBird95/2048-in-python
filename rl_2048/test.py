@@ -1,9 +1,6 @@
 from rl_2048.game.model import Model
 from rl_2048.game.controller import Controller
-from rl_2048.ExperienceFactory import ExperienceFactory
-import numpy as np
-import random
-import pickle
+from rl_2048.experience.ExperienceFactory import ExperienceFactory
 
 m = Model(None, 1)
 m.set_state_value(0, 0, 1)
@@ -12,11 +9,19 @@ c = Controller()
 c.set_model(m)
 
 
-ef = ExperienceFactory()
+ef = ExperienceFactory('T')
 
-xxx = 'C:/Users/T/Documents/GitHub/2048-in-python/docs'
-test = ef.generate(xxx, 'T', 1000, True)
+location = 'C:/Users/T/Documents/GitHub/2048-in-python/docs'
+test = ef.generate(location, 10000, False)
 
+
+# files = ['T_experience_1000_1.binary',
+#          'T_experience_1000_2.binary',
+#          'T_experience_1000_3.binary']
+#
+# zzz = ef.merge(location, files, True)
+
+ttt = 5
 
 # class Dump(object):
 #   def __init__(self):
@@ -34,15 +39,5 @@ test = ef.generate(xxx, 'T', 1000, True)
 #         self.ns_key[x, y] = random.randint(0, 10)
 #
 #
-# myDump = Dump()
-# myDump.fill()
-#
-# with open("super.file", "wb") as f:
-#     pickle.dump(myDump, f, pickle.HIGHEST_PROTOCOL)
-#
-# myDump = None
-#
-# with open("super.file", "rb") as f:
-#   myDump = pickle.load(f)
-#
-# yyy = 16
+
+yyy = 16
