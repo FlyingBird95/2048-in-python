@@ -62,4 +62,7 @@ class Board(Frame):
                                                     fg=CELL_COLOR_DICT[new_number])
         self.update_idletasks()
 
-board = Board()
+
+def new_board():
+    root = Tk()
+    return Board(root)
