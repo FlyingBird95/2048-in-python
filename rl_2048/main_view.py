@@ -15,6 +15,7 @@ TITLE_FONT = ("Helvetica", 32)
 
 INPUT_FONT = ("Helvetica", 16)
 INPUT_LABEL = "Trainings directory:"
+DEFAULT_VALUE = "/experiments/train"
 INPUT_Y = 100
 
 BUTTON_TRAIN_POS = (50, 200)
@@ -41,7 +42,7 @@ class Window(Frame):
 
 		# Add all elements
 		self.add_title(TITLE, TITLE_Y)
-		self.input_box = self.add_input_box(INPUT_LABEL, INPUT_Y)
+		self.input_box = self.add_input_box(INPUT_LABEL, INPUT_Y, DEFAULT_VALUE)
 
 		self.add_button(BUTTON_TRAIN_LABEL, BUTTON_TRAIN_POS, command=self.command_train)
 		self.add_button(BUTTON_PLAY_LABEL, BUTTON_PLAY_POS, command=self.command_play)
@@ -56,11 +57,17 @@ class Window(Frame):
 		label = Label(self.master, text=title, font=TITLE_FONT)
 		label.place(x=WIDTH/2, y=y, anchor="center")
 
-	def add_input_box(self, name, y):
+	def add_input_box(self, name, y, default_value):
 		label = Label(self.master, text=name, font=INPUT_FONT)
 		label.place(x=WIDTH / 2, y=y, anchor="center")
 
-		input_box = Entry(self.master, width=50, font=INPUT_FONT)
+		import os
+		dir_path = os.path.dirname(os.path.realpath(__file__))
+		folders = dir_path.split('/')
+		folders = folders[1:len(folders)-1]
+
+		value = StringVar(self, '/'.join(folders) + default_value)
+		input_box = Entry(self.master, width=50, font=INPUT_FONT, textvariable=value )
 		input_box.place(x=WIDTH/2, y=y+30, anchor="center")
 		return input_box
 
