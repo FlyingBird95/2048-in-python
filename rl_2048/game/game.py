@@ -1,7 +1,7 @@
 """Game class to represent 2048 game state."""
 
 import numpy as np
-from rl_2048.game.board import new_board
+from rl_2048.game.board import Board, Tk
 
 ACTION_NAMES = ["left", "up", "right", "down"]
 ACTION_LEFT = 0
@@ -28,7 +28,8 @@ class Game(object):
         """
 
         self._score = initial_score
-        self.board = new_board()
+        self.root = Tk()
+        self.board = Board(self.root)
 
         if state is None:
             self._state = np.zeros((4, 4), dtype=np.int)
@@ -48,7 +49,7 @@ class Game(object):
         for action in range(4):
             if self.is_action_available(action):
                 return False
-        self.board.destroy()
+        self.root.destroy()
         return True
 
     def available_actions(self):

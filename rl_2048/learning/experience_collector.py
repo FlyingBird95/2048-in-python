@@ -41,7 +41,6 @@ class ExperienceCollector(object):
         return (math.e ** (- 1 / (AVG_KEEP_PROB - MIN_KEEP_PROB) * value) +
                 MIN_KEEP_PROB)
 
-    @staticmethod
     def deduplicate(self, experiences):
         """Returns a new experience array that contains contains no duplicates."""
 

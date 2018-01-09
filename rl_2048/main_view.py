@@ -95,20 +95,14 @@ class Window(Frame):
 	def command_train(self):
 		""" command for starting the training """
 
-		def launch_training():
-			from rl_2048.learning.learning import run_training
-			run_training(self.get_train_dir())
-
-		threading.Thread(target=launch_training).start()
+		from rl_2048.learning.learning import run_training
+		run_training(self.get_train_dir())
 
 	def command_play(self):
 		""" command for playing a single game """
 
-		def launch_game():
-			from rl_2048.play_game import play_single_game
-			play_single_game(self.get_train_dir())
-
-		threading.Thread(target=launch_game).start()
+		from rl_2048.play_game import play_single_game
+		play_single_game(self.get_train_dir())
 
 	def command_tensorboard(self):
 		""" command for starting the tensorboard server """

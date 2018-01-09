@@ -19,7 +19,6 @@ FONT = ("Verdana", 40, "bold")
 class Board(Frame):
     def __init__(self, master=None):
         Frame.__init__(self, master)
-
         self.grid()
         self.master.title('2048')
 
@@ -62,7 +61,5 @@ class Board(Frame):
                                                     fg=CELL_COLOR_DICT[new_number])
         self.update_idletasks()
 
-
-def new_board():
-    root = Tk()
-    return Board(root)
+    def destroy_board(self):
+        self.destroy()
