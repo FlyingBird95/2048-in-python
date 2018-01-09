@@ -1,7 +1,6 @@
 """Game class to represent 2048 game state."""
 
 import numpy as np
-from rl_2048.game.board import board
 
 ACTION_NAMES = ["left", "up", "right", "down"]
 ACTION_LEFT = 0
@@ -17,7 +16,7 @@ class Game(object):
     for empty fields and ln2(value) for any tiles.
     """
 
-    def __init__(self, state=None, initial_score=0):
+    def __init__(self, state=None, initial_score=0, board=None):
         """Init the Game object.
 
         Args:
@@ -28,6 +27,7 @@ class Game(object):
         """
 
         self._score = initial_score
+        self.board = board
 
         if state is None:
             self._state = np.zeros((4, 4), dtype=np.int)
@@ -84,8 +84,10 @@ class Game(object):
         self._state = np.rot90(temp_state, -action)
         self._score += reward
 
+        if self.board:
+            self.board.update_grid_cells(self.state())
+
         self.add_random_tile()
-        board.update_grid_cells(self.state())
         return reward
 
     def _do_action_left(self, state):

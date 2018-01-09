@@ -4,6 +4,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from rl_2048.game.board import board
 from rl_2048.game.game import Game, ACTION_NAMES
 
 import numpy as np
@@ -57,7 +58,7 @@ def play(strategy, verbose=False, allow_unavailable_action=True):
           list Experience instances that represent the collected experience.
     """
 
-    game = Game()
+    game = Game(board=board)
 
     state = game.state().copy()
     game_over = game.game_over()

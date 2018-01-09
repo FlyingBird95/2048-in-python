@@ -17,8 +17,8 @@ FONT = ("Verdana", 40, "bold")
 
 
 class Board(Frame):
-    def __init__(self):
-        Frame.__init__(self)
+    def __init__(self, master=None):
+        Frame.__init__(self, master)
 
         self.grid()
         self.master.title('2048')
