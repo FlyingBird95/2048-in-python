@@ -30,7 +30,20 @@ class ExperienceBinary(object):
         self.experience = np.append(self.experience, data.experience, axis=0)
 
     def is_full(self):
-        return self.counter == self.size - 1
+        return self.counter == self.size
 
     def get_size(self):
         return self.size
+
+    def get_key(self):
+        return np.append(np.append(self.s_key, self.m_key, axis=1), self.ns_key, axis=1)
+
+    def remove_index(self, indexes):
+        self.counter += len(indexes)
+        self.size += len(indexes)
+
+        self.s_key = self.s_key[indexes, :]
+        self.m_key = self.m_key[indexes, :]
+        self.ns_key = self.ns_key[indexes, :]
+        self.experience = self.experience[indexes]
+

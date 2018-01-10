@@ -55,7 +55,31 @@ class ExperienceFactory(object):
         if verbose:
             print('Stored data')
 
-    def distinct(self, name): pass
+    def distinct(self, location, file, verbose=False):
+        if verbose:
+            print('Loading:', file)
+
+        data = ExperienceFactory.__read(path.join(location, file))
+
+        if verbose:
+            print('Loaded', data.get_size(), 'records')
+
+        _, indices = np.unique(data.get_key(), axis=0, return_index=True)
+
+        if verbose:
+            print('Found', data.get_size() - len(indices), 'duplicates')
+
+        data.remove_index(indices)
+
+        file_name = ExperienceFactory.__get_name(location, 'distinct', self.key, data.get_size())
+        if verbose:
+            print('Removed duplicates,', data.get_size(), 'remaining data points')
+            print('Writing data to:', file_name)
+
+        ExperienceFactory.__write(file_name, data)
+
+        if verbose:
+            print('All data writen')
 
     @staticmethod
     def __write(file, data):
