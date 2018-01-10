@@ -1,7 +1,8 @@
 """Game class to represent 2048 game state."""
 
 import numpy as np
-from rl_2048.game.board import Board, Tk
+import time
+from rl_2048.main_view import window
 
 ACTION_NAMES = ["left", "up", "right", "down"]
 ACTION_LEFT = 0
@@ -22,14 +23,20 @@ class Game(object):
 
         Args:
           state: Shape (4, 4) numpy array to initialize the state with. If None,
-              the state will be initialized with with two random tiles (as done
+              the state will be init
+    def _is_action_available_left(self, state):
+        Determines whether action 'Left' is available.
+
+        # True if any field is 0 (empty) on the leialized with with two random tiles (as done
               in the original game).
           initial_score: Score to initialize the Game with.
         """
 
         self._score = initial_score
-        # self.root = Tk()
-        # self.board = Board(self.root)
+        if window.checked():
+            from rl_2048.game.board import Board, Tk
+            self.root = Tk()
+            self.board = Board(self.root)
 
         if state is None:
             self._state = np.zeros((4, 4), dtype=np.int)
@@ -49,7 +56,9 @@ class Game(object):
         for action in range(4):
             if self.is_action_available(action):
                 return False
-        # self.root.destroy()
+        if hasattr(self, 'root'):
+            self.root.destroy()
+        window.log('Final score: ' + str(self.score()))
         return True
 
     def available_actions(self):
@@ -87,9 +96,11 @@ class Game(object):
         self._state = np.rot90(temp_state, -action)
         self._score += reward
 
-        # self.board.update_grid_cells(self.state())
+        if hasattr(self, 'board'):
+            self.board.update_grid_cells(self.state())
 
         self.add_random_tile()
+        time.sleep(window.get_delay_ms())
         return reward
 
     def _do_action_left(self, state):
