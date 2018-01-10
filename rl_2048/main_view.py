@@ -68,7 +68,7 @@ class Window(Frame):
 		return str(self.input_box.get())
 
 	def get_delay_ms(self):
-		return int(self.delay_move.get())
+		return int(self.delay_move.get()) / 1000.0
 
 	def add_title(self, title, y):
 		label = Label(self.master, text=title, font=TITLE_FONT)
@@ -143,4 +143,4 @@ root = Tk()
 root.geometry(str(WIDTH) + "x" + str(HEIGHT))
 root.resizable(False, False)
 window = Window(root)
-# root.mainloop()  # blocking function (i.e. function never returns)
+root.mainloop()  # blocking function (i.e. function never returns)
