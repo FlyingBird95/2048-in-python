@@ -76,7 +76,7 @@ class ExperienceFactory(object):
             print('Removed duplicates,', data.get_size(), 'remaining data points')
             print('Writing data to:', file_name)
 
-        ExperienceFactory.__write(file_name, data)
+        ExperienceFactory.__write(path.join(location, file_name), data)
 
         if verbose:
             print('All data writen')

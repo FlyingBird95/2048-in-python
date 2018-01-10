@@ -39,8 +39,8 @@ class ExperienceBinary(object):
         return np.append(np.append(self.s_key, self.m_key, axis=1), self.ns_key, axis=1)
 
     def remove_index(self, indexes):
-        self.counter += len(indexes)
-        self.size += len(indexes)
+        self.counter = len(indexes)
+        self.size = len(indexes)
 
         self.s_key = self.s_key[indexes, :]
         self.m_key = self.m_key[indexes, :]

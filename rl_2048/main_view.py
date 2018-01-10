@@ -40,7 +40,7 @@ class Window(Frame):
 	def __init__(self, master=None):
 		Frame.__init__(self, master)
 		self.master = master
-		self.show_games = IntVar(value=1)  # checkbox for showing games or not
+		self.show_games = IntVar(value=0)  # checkbox for showing games or not
 		self.input_box = None              # input directory for training data
 		self.log_text = None               # output log
 		self.delay_move = None             # amount of ms that the programs sleep after a move
@@ -143,4 +143,4 @@ root = Tk()
 root.geometry(str(WIDTH) + "x" + str(HEIGHT))
 root.resizable(False, False)
 window = Window(root)
-root.mainloop()  # blocking function (i.e. function never returns)
+# root.mainloop()  # blocking function (i.e. function never returns)
