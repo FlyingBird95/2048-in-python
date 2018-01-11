@@ -23,7 +23,7 @@ BUTTON_TRAIN_POS = (50, 200)
 BUTTON_TRAIN_LABEL = "Start training"
 
 BUTTON_PLAY_POS = (int(WIDTH/2), 200)
-BUTTON_PLAY_LABEL = "Play a single game"
+BUTTON_PLAY_LABEL = "Play games"
 
 BUTTON_TENSORBOARD_POS = (WIDTH-50, 200)
 BUTTON_TENSORBOARD_LABEL = "Start tensorboard"
@@ -35,6 +35,11 @@ DELAY_LABEL = "Delay per move (in ms):"
 DELAY_Y = 300
 DELAY_WIDTH = 5
 
+NUM_GAMES_LABEL = "Num games:"
+NUM_GAMES_Y = 300
+NUM_GAMES_X = WIDTH-150
+NUM_GAMES_WIDTH = 5
+
 
 class Window(Frame):
 	def __init__(self, master=None):
@@ -44,6 +49,7 @@ class Window(Frame):
 		self.input_box = None              # input directory for training data
 		self.log_text = None               # output log
 		self.delay_move = None             # amount of ms that the programs sleep after a move
+		self.num_games = None              # amount of games played
 		self.init_view()
 
 	def init_view(self):
@@ -54,6 +60,7 @@ class Window(Frame):
 		self.add_title(TITLE, TITLE_Y)
 		self.input_box = self.add_input_box(INPUT_LABEL, INPUT_Y, INPUT_WIDTH, DEFAULT_VALUE)
 		self.delay_move = self.add_input_box(DELAY_LABEL, DELAY_Y, DELAY_WIDTH, "0")
+		self.num_games = self.add_input_box(NUM_GAMES_LABEL, NUM_GAMES_Y, NUM_GAMES_WIDTH, "1", NUM_GAMES_X)
 
 		self.add_button(BUTTON_TRAIN_LABEL, BUTTON_TRAIN_POS, "nw", command=self.command_train)
 		self.add_button(BUTTON_PLAY_LABEL, BUTTON_PLAY_POS, "n", command=self.command_play)
@@ -70,17 +77,26 @@ class Window(Frame):
 	def get_delay_ms(self):
 		return int(self.delay_move.get()) / 1000.0
 
+	def get_num_games(self):
+		return int(self.num_games.get())
+
 	def add_title(self, title, y):
 		label = Label(self.master, text=title, font=TITLE_FONT)
 		label.place(x=WIDTH/2, y=y, anchor="center")
 
-	def add_input_box(self, name, y, width, default_value):
+	def add_input_box(self, name, y, width, default_value, x=0):
 		label = Label(self.master, text=name, font=INPUT_FONT)
-		label.place(x=WIDTH / 2, y=y, anchor="center")
+		if x == 0:
+			label.place(x=WIDTH / 2, y=y, anchor="center")
+		else:
+			label.place(x=x, y=y, anchor="nw")
 
 		value = StringVar(self, default_value)
-		input_box = Entry(self.master, width=width, font=INPUT_FONT, textvariable=value )
-		input_box.place(x=WIDTH/2, y=y+30, anchor="center")
+		input_box = Entry(self.master, width=width, font=INPUT_FONT, textvariable=value)
+		if x == 0:
+			input_box.place(x=WIDTH/2, y=y+30, anchor="center")
+		else:
+			input_box.place(x=x, y=y + 30, anchor="nw")
 		return input_box
 
 	def add_button(self, text, position, anchor, command):
@@ -117,14 +133,17 @@ class Window(Frame):
 	def command_train(self):
 		""" command for starting the training """
 		self.log('Starting with the training')
+
 		from rl_2048.learning.learning import run_training
 		run_training(self.get_train_dir())
 
 	def command_play(self):
-		""" command for playing a single game """
-		self.log('Playing a single game')
-		from rl_2048.play_game import play_single_game
-		play_single_game(self.get_train_dir())
+		""" command for playing a number of games """
+		self.log('Playing ' + str(self.get_num_games()) + ' game(s).')
+
+		from rl_2048.play_game import average_score, make_greedy_strategy
+		score = average_score(make_greedy_strategy(self.get_train_dir(), self.get_num_games()))
+		self.log('Average score: ' + str(score))
 
 	def command_tensorboard(self):
 		""" command for starting the tensorboard server """
