@@ -12,7 +12,7 @@ NUM_ACTIONS = 4
 # Number of hidden units in each hidden layer
 HIDDEN_SIZES = [256, 256]
 
-OPTIMIZER_CLASS = tf.train.GradientDescentOptimizer
+OPTIMIZER_CLASS = tf.train.AdamOptimizer
 ACTIVATION_FUNCTION = tf.nn.relu
 WEIGHT_INIT_SCALE = 0.01
 
