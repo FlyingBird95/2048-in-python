@@ -2,7 +2,8 @@
 
 import numpy as np
 import time
-from rl_2048.main_view import window
+from rl_2048.gui.window import log
+from rl_2048.gui import config
 
 ACTION_NAMES = ["left", "up", "right", "down"]
 ACTION_LEFT = 0
@@ -33,7 +34,7 @@ class Game(object):
         """
 
         self._score = initial_score
-        if window.checked():
+        if config.show_games():
             from rl_2048.game.board import Board, Tk
             self.root = Tk()
             self.board = Board(self.root)
@@ -58,7 +59,7 @@ class Game(object):
                 return False
         if hasattr(self, 'root'):
             self.root.destroy()
-        window.log('Final score: ' + str(self.score()))
+        log('Final score: ' + str(self.score()))
         return True
 
     def available_actions(self):
@@ -100,7 +101,7 @@ class Game(object):
             self.board.update_grid_cells(self.state())
 
         self.add_random_tile()
-        time.sleep(window.get_delay_ms())
+        time.sleep(config.get_delay_ms())
         return reward
 
     def _do_action_left(self, state):
