@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter.scrolledtext import ScrolledText
 from rl_2048.gui.root import WIDTH
 from rl_2048.gui.config import Config
+from tkinter.constants import END
 import threading
 
 TITLE_FONT = ("Helvetica", 32)
@@ -48,20 +49,19 @@ class Window(Frame):
 		# Add the log
 		Label(self.master, text="Log:", font=DEFAULT_FONT).place(x=10, y=370)
 
-		global log_obj
-		log_obj = ScrolledText(self.master, width=111, height=12)
-		log_obj.configure(state="disabled")
-		log_obj.place(x=0, y=400)
+		self.log_obj = ScrolledText(self.master, width=111, height=12)
+		self.log_obj.configure(state="disabled")
+		self.log_obj.place(x=0, y=400)
 
-		log('Program initialised')
+		self.log('Program initialised')
 
 	def add_input_box(self, label, pos, input_width, value):
 		"""
-		Place an input box, together with a label.
-		:param label: a string with the text of the label
-		:param pos: the position (consists of a tuple) with the x and y location
-		:param input_width: how many characters the input box is width
-		:param value: reference to attribute in the config-obj
+			Place an input box, together with a label.
+			:param label: a string with the text of the label
+			:param pos: the position (consists of a tuple) with the x and y location
+			:param input_width: how many characters the input box is width
+			:param value: reference to attribute in the config-obj
 		"""
 
 		x, y = pos
@@ -73,9 +73,9 @@ class Window(Frame):
 
 	def add_button(self, text, position, command):
 		"""
-		:param text: Label for the button
-		:param position: the position (consists of a tuple) with the x and y location
-		:param command: function reference to whatever is being executed when the button is clicked
+			:param text: Label for the button
+			:param position: the position (consists of a tuple) with the x and y location
+			:param command: function reference to whatever is being executed when the button is clicked
 		"""
 
 		button = Button(self.master, text=text, command=command, font=DEFAULT_FONT)
@@ -84,13 +84,23 @@ class Window(Frame):
 
 	def add_checkbox(self, label, position, value):
 		"""
-		:param label: Name of the checkbox
-		:param position: the position (consists of a tuple) with the x and y location
-		:param value: reference to attribute in the config-obj
+			:param label: Name of the checkbox
+			:param position: the position (consists of a tuple) with the x and y location
+			:param value: reference to attribute in the config-obj
 		"""
 		checkbox = Checkbutton(self.master, text=label, variable=value, font=DEFAULT_FONT)
 		x, y = position
 		checkbox.place(x=x, y=y, anchor="nw")
+
+	def log(self, text):
+		"""
+			Add a line of text to the log-obj
+			:param text: the text (without the newline) to be added
+		"""
+		self.log_obj.configure(state="normal")
+		self.log_obj.insert(END, text + '\n')
+		self.log_obj.see('end')
+		self.log_obj.configure(state="disabled")
 
 	# Methods below are button actions
 	def start_training(self):
@@ -98,7 +108,7 @@ class Window(Frame):
 			Start with the training (gathering experiences)
 		"""
 		def train():
-			log('Starting with the training')
+			self.log('Starting with the training')
 			from rl_2048.learning.learning import run_training
 			run_training(self.config.get_train_dir())
 
@@ -109,11 +119,11 @@ class Window(Frame):
 			Start playing a number of games
 		"""
 		def play():
-			log('Playing ' + str(self.config.get_num_games()) + ' game(s).')
+			self.log('Playing ' + str(self.config.get_num_games()) + ' game(s).')
 
 			from rl_2048.play_game import average_score, make_greedy_strategy
-			score = average_score(make_greedy_strategy(self.config.get_train_dir()), config=self.config)
-			log('Average score: ' + str(score))
+			score = average_score(make_greedy_strategy(self.config.get_train_dir()), window=self)
+			self.log('Average score: ' + str(score))
 
 		threading.Thread(target=play).start()
 
@@ -122,29 +132,9 @@ class Window(Frame):
 			Start the tensorboard server (using the command line)
 		"""
 		def launch_tensor_board():
-			log('Starting tensorboard')
+			self.log('Starting tensorboard')
 			import os
 			os.system('tensorboard --logdir=' + self.config.get_train_dir())
 			return
 
 		threading.Thread(target=launch_tensor_board).start()
-
-
-# static object
-# TODO: change static object to an object which is part of the Window class.
-# then for every call that uses this log_obj, pass it through
-log_obj = None
-
-
-def log(text):
-	"""
-	Add a line of text to the log-obj
-	:precondition there must be a Window-obj be defined
-	:param text: the text (without the newline) to be added
-	"""
-	if log_obj:
-		from tkinter.constants import END
-		log_obj.configure(state="normal")
-		log_obj.insert(END, text + '\n')
-		log_obj.see('end')
-		log_obj.configure(state="disabled")

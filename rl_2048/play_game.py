@@ -12,12 +12,12 @@ import tensorflow as tf
 import numpy as np
 
 
-def average_score(strategy, config=None):
+def average_score(strategy, window=None):
     """Plays a number of games, returns average score."""
 
     scores = []
-    for _ in range(config.get_num_games()):
-        score, _ = play.play(strategy, allow_unavailable_action=False, config=config)
+    for _ in range(window.config.get_num_games()):
+        score, _ = play.play(strategy, allow_unavailable_action=False, window=window)
         scores.append(score)
     return np.mean(scores)
 

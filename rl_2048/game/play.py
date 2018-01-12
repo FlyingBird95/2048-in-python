@@ -42,7 +42,7 @@ class Experience(object):
         return self.__str__()
 
 
-def play(strategy, verbose=False, allow_unavailable_action=True, config=None):
+def play(strategy, verbose=False, allow_unavailable_action=True, window=None):
     """Plays a single game, using a provided strategy.
 
     Args:
@@ -57,17 +57,13 @@ def play(strategy, verbose=False, allow_unavailable_action=True, config=None):
           list Experience instances that represent the collected experience.
     """
 
-    game = Game(config=config)
+    game = Game(window=window)
 
     state = game.state().copy()
     game_over = game.game_over()
     experiences = []
 
     while not game_over:
-        if verbose:
-            print("Score:", game.score())
-            game.print_state()
-
         old_state = state
         next_action = strategy(
             old_state, range(4) if allow_unavailable_action
