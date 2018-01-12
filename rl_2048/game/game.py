@@ -37,8 +37,7 @@ class Game(object):
         self._score = initial_score
         self.window = window
         if self.window and self.window.config.show_games():
-            self.root = Tk()
-            self.board = Board(self.root)
+            self.board = Board()
 
         if state is None:
             self._state = np.zeros((4, 4), dtype=np.int)
@@ -58,8 +57,8 @@ class Game(object):
         for action in range(4):
             if self.is_action_available(action):
                 return False
-        if hasattr(self, 'root'):
-            self.root.destroy()
+        if hasattr(self, 'board'):
+            self.board.destroy_board()
             self.window.log('Final score: ' + str(self.score()))
         return True
 
@@ -118,7 +117,7 @@ class Game(object):
 
             for col in range(4):
                 if state[row, col] == 0:
-                  continue
+                    continue
 
                 if (merge_candidate != -1 and not merged[merge_candidate] and
                         state[row, merge_candidate] == state[row, col]):
