@@ -9,6 +9,8 @@ class Config(object):
 		All options that are set in the Main GUI (see window.py) can be accessed in this class.
 	"""
 	def __init__(self, master):
+		self.master = master
+
 		self.train_dir_obj = StringVar(master=master, value=DEFAULT_TRAIN_DIR)
 		self.delay_in_ms_obj = StringVar(master=master, value='0')
 		self.num_games_obj = StringVar(master=master, value='1')

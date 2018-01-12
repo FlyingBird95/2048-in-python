@@ -3,7 +3,7 @@
 import numpy as np
 import time
 from rl_2048.gui.window import log
-from rl_2048.gui import config
+from rl_2048.game.board import Board, Tk
 
 ACTION_NAMES = ["left", "up", "right", "down"]
 ACTION_LEFT = 0
@@ -19,7 +19,7 @@ class Game(object):
     for empty fields and ln2(value) for any tiles.
     """
 
-    def __init__(self, state=None, initial_score=0):
+    def __init__(self, state=None, initial_score=0, config=None):
         """Init the Game object.
 
         Args:
@@ -34,8 +34,8 @@ class Game(object):
         """
 
         self._score = initial_score
-        if config.show_games():
-            from rl_2048.game.board import Board, Tk
+        self.config = config
+        if self.config and self.config.show_games():
             self.root = Tk()
             self.board = Board(self.root)
 
@@ -49,7 +49,7 @@ class Game(object):
     def copy(self):
         """Return a copy of self."""
 
-        return Game(np.copy(self._state), self._score)
+        return Game(np.copy(self._state), self._score, self.config)
 
     def game_over(self):
         """Whether the game is over."""
@@ -101,7 +101,8 @@ class Game(object):
             self.board.update_grid_cells(self.state())
 
         self.add_random_tile()
-        time.sleep(config.get_delay_ms())
+        if self.config and self.config.get_delay_in_sec() > 0:
+            time.sleep(self.config.get_delay_in_sec())
         return reward
 
     def _do_action_left(self, state):

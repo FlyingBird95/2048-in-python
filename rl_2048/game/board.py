@@ -60,6 +60,3 @@ class Board(Frame):
                     self.grid_cells[i][j].configure(text=str(new_number), bg=BACKGROUND_COLOR_DICT[new_number],
                                                     fg=CELL_COLOR_DICT[new_number])
         self.update_idletasks()
-
-    def destroy_board(self):
-        self.destroy()

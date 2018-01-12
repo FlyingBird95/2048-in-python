@@ -112,7 +112,7 @@ class Window(Frame):
 			log('Playing ' + str(self.config.get_num_games()) + ' game(s).')
 
 			from rl_2048.play_game import average_score, make_greedy_strategy
-			score = average_score(make_greedy_strategy(self.config.get_train_dir()), self.config.get_num_games())
+			score = average_score(make_greedy_strategy(self.config.get_train_dir()), config=self.config)
 			log('Average score: ' + str(score))
 
 		threading.Thread(target=play).start()
@@ -130,7 +130,9 @@ class Window(Frame):
 		threading.Thread(target=launch_tensor_board).start()
 
 
-# two static objects
+# static object
+# TODO: change static object to an object which is part of the Window class.
+# then for every call that uses this log_obj, pass it through
 log_obj = None
 
 
