@@ -1,39 +1,8 @@
 import numpy as np
 from rl_2048.game.game import Game
-from rl_2048.experience.Experience import Experience
 
 
-class ExperienceGenerator(object):
-
-    def __init__(self, experience_binary):
-        self.experience_binary = experience_binary
-
-    def play(self, strategy, verbose=False):
-
-        while not self.experience_binary.is_full():
-
-            game = Game()
-
-            state = game.state().copy()
-            game_over = game.game_over()
-
-            while not game_over:
-                old_state = state
-                next_action = strategy(old_state, game.available_actions())
-
-                reward = game.do_action(next_action)
-                state = game.state().copy()
-                game_over = game.game_over()
-
-                self.experience_binary.add(Experience(old_state, next_action, reward, state, game_over, game.available_actions()))
-
-                if self.experience_binary.is_full():
-                    break
-
-            if verbose:
-                print("Score:", game.score())
-                game.print_state()
-                print("Game over.")
+class Strategies(object):
 
     @staticmethod
     def random_strategy(_, actions):
@@ -75,14 +44,13 @@ class ExperienceGenerator(object):
     def make_epsilon_greedy_strategy(get_q_values, epsilon):
         """Makes epsilon_greedy_strategy."""
 
-        greedy_strategy = ExperienceGenerator.make_greedy_strategy(get_q_values)
+        greedy_strategy = Strategies.make_greedy_strategy(get_q_values)
 
         def epsilon_greedy_strategy(state, actions):
             """Picks random action with prob. epsilon, otherwise greedy_strategy."""
             do_random_action = np.random.choice([True, False], p=[epsilon, 1 - epsilon])
             if do_random_action:
-                return ExperienceGenerator.random_strategy(state, actions)
+                return Strategies.random_strategy(state, actions)
             return greedy_strategy(state, actions)
 
         return epsilon_greedy_strategy
-
