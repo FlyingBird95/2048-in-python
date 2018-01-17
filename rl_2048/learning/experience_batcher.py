@@ -26,18 +26,14 @@ MIN_EPSILON = 0.1
 class ExperienceBatcher(object):
     """Builds experience batches using an ExperienceCollector."""
 
-    def __init__(self, experience_collector, run_inference, get_q_values,
-                 state_normalize_factor):
+    def __init__(self, experience_collector, run_inference, get_q_values, state_normalize_factor):
         self.experience_collector = experience_collector
         self.run_inference = run_inference
         self.get_q_values = get_q_values
         self.state_normalize_factor = state_normalize_factor
 
-
     def get_batches_stepwise(self):
-        """Wraps get_batches(), keeping the current predictions constant for
-        BATCHES_KEEP_CONSTANT steps.
-        """
+        """Wraps get_batches(), keeping the current predictions constant for BATCHES_KEEP_CONSTANT steps."""
 
         cache = []
 
@@ -50,32 +46,23 @@ class ExperienceBatcher(object):
                 cache = []
 
     def get_batches(self):
-        """Yields randomized batches epsilon-greedy games.
-
-        Maintains a replay memory at full capacity.
         """
+            Yields randomized batches epsilon-greedy games.
 
-        print("Initializing memory...")
-        memory = ReplayMemory()
-        while not memory.is_full():
-            for experience in self.experience_collector.collect(play.random_strategy):
-              memory.add(experience)
-
-        memory.print_stats()
+            Maintains a replay memory at full capacity.
+        """
 
         for i in itertools.count():
             if i < START_DECREASE_EPSILON_GAMES:
                 epsilon = 1.0
             else:
-                epsilon = max(MIN_EPSILON,
-                              1.0 - (i - START_DECREASE_EPSILON_GAMES) /
-                              DECREASE_EPSILON_GAMES)
+                epsilon = max(MIN_EPSILON, 1.0 - (i - START_DECREASE_EPSILON_GAMES) / DECREASE_EPSILON_GAMES)
 
             strategy = play.make_epsilon_greedy_strategy(self.get_q_values, epsilon)
 
-            for experience in self.experience_collector.collect(strategy):
-                memory.add(experience)
-                batch_experiences = memory.sample(BATCH_SIZE)
+            for experience in self.experience_collector.generate_game(strategy):
+                self.experience_collector.add(experience)
+                batch_experiences = self.experience_collector.sample(BATCH_SIZE)
                 yield self.experiences_to_batches(batch_experiences)
 
     def experiences_to_batches(self, experiences):
@@ -91,19 +78,14 @@ class ExperienceBatcher(object):
         merged = np.zeros((batch_size,), dtype=np.float)
 
         for i, experience in enumerate(experiences):
-            state_batch[i, :] = (experience.state.flatten() *
-                                 self.state_normalize_factor)
-            next_state_batch[i, :] = (experience.next_state.flatten() *
-                                      self.state_normalize_factor)
+            state_batch[i, :] = (experience.state.flatten() * self.state_normalize_factor)
+            next_state_batch[i, :] = (experience.next_state.flatten() * self.state_normalize_factor)
             actions[i] = experience.action
             reward_batch[i] = experience.reward
-            bad_action_batch[i] = experience.game_over or experience.not_available
+            bad_action_batch[i] = experience.game_over
             available_actions_batch[i, experience.next_state_available_actions] = True
-            merged[i] = (np.count_nonzero(experience.state) -
-                         np.count_nonzero(experience.next_state) + 1)
+            merged[i] = (np.count_nonzero(experience.state) - np.count_nonzero(experience.next_state) + 1)
 
-        targets = TargetBatchComputer(self.run_inference).compute(
-            reward_batch, bad_action_batch, next_state_batch,
-            available_actions_batch, merged)
+        targets = TargetBatchComputer(self.run_inference).compute(reward_batch, bad_action_batch, next_state_batch, available_actions_batch, merged)
 
         return state_batch, targets, actions

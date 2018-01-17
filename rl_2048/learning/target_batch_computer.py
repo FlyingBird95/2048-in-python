@@ -52,8 +52,7 @@ class TargetBatchComputer(object):
         good_action_batch = np.logical_not(bad_action_batch)
 
         targets[bad_action_batch] = LOST_REWARD
-        targets[good_action_batch] = (merged[good_action_batch] *
-                                      MERGED_REWARD_FACTOR)
+        targets[good_action_batch] = (merged[good_action_batch] * MERGED_REWARD_FACTOR)
 
         if GAMMA > 0:
             predictions = self.run_inference(next_state_batch)

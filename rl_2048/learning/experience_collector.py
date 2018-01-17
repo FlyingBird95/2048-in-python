@@ -38,8 +38,7 @@ class ExperienceCollector(object):
             return 1.0
 
         value = 1 - index / (length - 1)
-        return (math.e ** (- 1 / (AVG_KEEP_PROB - MIN_KEEP_PROB) * value) +
-                MIN_KEEP_PROB)
+        return (math.e ** (- 1 / (AVG_KEEP_PROB - MIN_KEEP_PROB) * value) + MIN_KEEP_PROB)
 
     def deduplicate(self, experiences):
         """Returns a new experience array that contains contains no duplicates."""

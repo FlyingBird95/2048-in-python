@@ -30,13 +30,4 @@ class Experience(object):
         return self.__str__()
 
     def get_id(self):
-        return np.concatenate((self.state.ravel(), self.action, self.next_state.ravel()))
-
-    def get_id_state(self):
-        return self.state.ravel()
-
-    def get_id_action(self):
-        return self.action
-
-    def get_id_next_state(self):
-        return self.next_state.ravel()
+        return np.concatenate((self.state.ravel(), [self.action], self.next_state.ravel()))
