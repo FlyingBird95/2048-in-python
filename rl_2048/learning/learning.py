@@ -6,19 +6,18 @@ from __future__ import print_function
 
 import sys
 import os
-
 import tensorflow as tf
 import numpy as np
 
-from rl_2048.game import play
 from rl_2048.experience.ExperienceReplay import ExperienceReplay
 from rl_2048.learning.experience_batcher import ExperienceBatcher
-from rl_2048.learning.experience_collector import ExperienceCollector
 from rl_2048.learning.model import FeedModel
 from rl_2048.learning.Strategies import Strategies
+from rl_2048.game.play import Play
 
 STATE_NORMALIZE_FACTOR = 1.0 / 15.0
 EXPERIENCE_FILE_NAME = 'EXPERIENCE_FILE_NAME.binary'
+REFERENCE_FILE_NAME = 'REFERENCE_FILE_NAME.binary'
 
 
 def make_run_inference(session, model):
@@ -61,35 +60,51 @@ def run_training(train_dir):
             print("Resuming: ", train_dir)
             saver.restore(session, tf.train.latest_checkpoint(train_dir))
             experience_replay = ExperienceReplay().load(os.path.join(train_dir, EXPERIENCE_FILE_NAME))
+            experience_reference = ExperienceReplay().load(os.path.join(train_dir, REFERENCE_FILE_NAME))
         else:
             print("Starting new training: ", train_dir)
             session.run(model.init)
+
             experience_replay = ExperienceReplay()
-            experience_replay.generate(10000, Strategies.random_strategy)
+            experience_replay.generate(100, Strategies.random_strategy, True)  # 10000
+            experience_replay.save(os.path.join(train_dir, EXPERIENCE_FILE_NAME))
+
+            experience_reference = ExperienceReplay()
+            experience_reference.generate(1000, Strategies.random_strategy, True)  # 100000
+            experience_reference.save(os.path.join(train_dir, REFERENCE_FILE_NAME))
 
         run_inference = make_run_inference(session, model)
         get_q_values = make_get_q_values(session, model)
 
         batcher = ExperienceBatcher(experience_replay, run_inference, get_q_values, STATE_NORMALIZE_FACTOR)
 
-        # test_experiences = experience_collector.collect(play.random_strategy, 100)
-        test_experiences = experience_replay.sample(10000)
-
         for state_batch, targets, actions in batcher.get_batches_stepwise():
 
+            # score = test(get_q_values, 1)
             global_step, _ = session.run([model.global_step, model.train_op],
                                          feed_dict={
                                            model.state_batch_placeholder: state_batch,
                                            model.targets_placeholder: targets,
                                            model.actions_placeholder: actions, })
 
-            if global_step % 10000 == 0 and global_step != 0:
+            if global_step % 100 == 0 and global_step != 0:  # 10000
                 saver.save(session, train_dir + "/checkpoint", global_step=global_step)
-                loss = write_summaries(session, batcher, model, test_experiences, summary_writer)
+                loss = write_summaries(session, batcher, model, experience_reference.get_experience(), summary_writer)
                 experience_replay.save(os.path.join(train_dir, EXPERIENCE_FILE_NAME))
+                experience_reference.save(os.path.join(train_dir, REFERENCE_FILE_NAME))
                 print("Step:", global_step, "Loss:", loss)
             if global_step % 100000 == 0 and global_step != 0:
                 break
+
+
+def test(q_values, games):
+    strategy = Strategies.make_greedy_strategy(q_values)
+    scores = []
+    for _ in range(games):
+        score, _ = Play.play_game(strategy)
+        scores.append(score)
+
+    return sum(scores) / len(scores)
 
 
 def write_summaries(session, batcher, model, test_experiences, summary_writer):
@@ -104,6 +119,7 @@ def write_summaries(session, batcher, model, test_experiences, summary_writer):
         targets_p: targets,
         actions_p: actions, })
     summary_writer.add_summary(summary_str, global_step)
+    tf.summary.merge_all()
     return loss
 
 
@@ -111,8 +127,8 @@ def main(args):
     """Main function."""
 
     if len(args) != 2:
-      print("Usage: %s train_dir" % args[0])
-      sys.exit(1)
+        print("Usage: %s train_dir" % args[0])
+        sys.exit(1)
 
     run_training(args[1])
 

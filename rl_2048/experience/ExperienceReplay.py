@@ -1,14 +1,6 @@
-from rl_2048.game.game import Game
-from rl_2048.experience.Experience import Experience
+from rl_2048.game.play import Play
 import numpy as np
 import pickle
-import random
-import math
-
-# Parameters for under sampling
-DO_UNDER_SAMPLING = True
-AVG_KEEP_PROB = 0.04
-MIN_KEEP_PROB = 0.01
 
 
 class ExperienceReplay(object):
@@ -27,43 +19,32 @@ class ExperienceReplay(object):
         with open(file, 'rb') as f:
             return pickle.load(f)
 
-    def generate(self, count, strategy):
+    def generate(self, count, strategy, verbose=False):
+        def local_print(index, addition):
+            if verbose:
+                print('{0}/{1} += {2}'.format(count, index, addition))
+
         self.size = count
         self.keys = np.zeros((count, 16 + 1 + 16), np.int8)
         self.values = np.empty(count, object)
 
+        if verbose:
+            print('--Start generation--')
+
         x = 0
         while True:
-            experience_list = ExperienceReplay.generate_game(strategy)
+            _, experience_list = Play.play_game(strategy)
+            experience_list = Play.under_sample_game(experience_list)
+            local_print(x, len(experience_list));
+
             for experience in experience_list:
                 self.keys[x, :] = experience.get_id()
                 self.values[x] = experience
                 x += 1
 
                 if x >= count:
+                    local_print(x, x)
                     return
-
-    @staticmethod
-    def generate_game(strategy):
-        game = Game()
-        state = game.state().copy()
-        game_over = game.game_over()
-
-        experience_list = []
-        while not game_over:
-            old_state = state
-            next_action = strategy(old_state, game.available_actions())
-
-            reward = game.do_action(next_action)
-            state = game.state().copy()
-            game_over = game.game_over()
-
-            experience_list.append(Experience(old_state, next_action, reward, state, game_over, game.available_actions()))
-
-        experience_list = [e for index, e in enumerate(experience_list)
-                           if (np.random.rand() < ExperienceReplay.__get_keep_probability(index, len(experience_list)))]
-
-        return experience_list
 
     def merge(self, experience_replay):
         self.size += experience_replay.size
@@ -79,6 +60,9 @@ class ExperienceReplay(object):
         idx = np.random.randint(self.size, size=n_samples)
         return self.values[idx]
 
+    def get_experience(self):
+        return self.values
+
     def add(self, experience, n_deletes=1):
         self.keys = np.delete(self.keys, np.s_[0:n_deletes], 0)
         self.values = np.delete(self.values, np.s_[0:n_deletes], 0)
@@ -90,25 +74,3 @@ class ExperienceReplay(object):
 
     def get_size(self):
         return self.size
-
-    @staticmethod
-    def __get_keep_probability(index, length):
-        """Computes the keep probability for the experience with a given index.
-
-        First, the index is mapped to a value x between 0 and 1 (last index mapped
-        to 0, index 0 mapped to 1). Then, the keep probability is computed by a
-        function keep_prob = e^(ax) + MIN_KEEP_PROB, such that the average
-        probability is AVG_KEEP_PROB.
-
-        For small AVG_KEEP_PROB, a can be approximated by
-        a = - 1 / (AVG_KEEP_PROB - MIN_KEEP_PROB).
-
-        Args:
-          index: zero-based index of the experience.
-          length: total number of experiences.
-        """
-        if not DO_UNDER_SAMPLING:
-            return 1.0
-
-        value = 1 - index / (length - 1)
-        return math.e ** (- 1 / (AVG_KEEP_PROB - MIN_KEEP_PROB) * value) + MIN_KEEP_PROB

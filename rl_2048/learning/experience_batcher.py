@@ -7,8 +7,8 @@ from __future__ import print_function
 import numpy as np
 import itertools
 
-from rl_2048.game import play
-from rl_2048.learning.replay_memory import ReplayMemory
+from rl_2048.game.play import Play
+from rl_2048.learning.Strategies import Strategies
 from rl_2048.learning.target_batch_computer import TargetBatchComputer
 
 
@@ -24,7 +24,6 @@ MIN_EPSILON = 0.1
 
 
 class ExperienceBatcher(object):
-    """Builds experience batches using an ExperienceCollector."""
 
     def __init__(self, experience_collector, run_inference, get_q_values, state_normalize_factor):
         self.experience_collector = experience_collector
@@ -48,7 +47,6 @@ class ExperienceBatcher(object):
     def get_batches(self):
         """
             Yields randomized batches epsilon-greedy games.
-
             Maintains a replay memory at full capacity.
         """
 
@@ -58,9 +56,10 @@ class ExperienceBatcher(object):
             else:
                 epsilon = max(MIN_EPSILON, 1.0 - (i - START_DECREASE_EPSILON_GAMES) / DECREASE_EPSILON_GAMES)
 
-            strategy = play.make_epsilon_greedy_strategy(self.get_q_values, epsilon)
+            strategy = Strategies.make_epsilon_greedy_strategy(self.get_q_values, epsilon)
+            _, experiences = Play.play_game(strategy)
 
-            for experience in self.experience_collector.generate_game(strategy):
+            for experience in Play.under_sample_game(experiences):
                 self.experience_collector.add(experience)
                 batch_experiences = self.experience_collector.sample(BATCH_SIZE)
                 yield self.experiences_to_batches(batch_experiences)
