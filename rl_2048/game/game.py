@@ -4,7 +4,7 @@ import time
 
 import numpy as np
 
-from rl_2048.gui.board import Board, Tk
+from rl_2048.gui.board import Board
 
 ACTION_NAMES = ["left", "up", "right", "down"]
 ACTION_LEFT = 0
