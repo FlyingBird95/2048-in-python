@@ -40,11 +40,11 @@ class Window(Frame):
         self.add_input_box("Delay per move (in ms)", DELAY_MS_POS, 5, self.config.delay_in_ms_obj)
         self.add_input_box("Number of games", NUM_GAMES_POS, 5, self.config.num_games_obj)
 
+        self.add_checkbox("Show games", SHOW_GAMES_CHECKBOX_POS, self.config.show_games_obj)
+
         self.add_button("Start training", TRAIN_BUTTON_POS, self.start_training)
         self.add_button("Start playing", PLAY_BUTTON_POS, self.start_playing)
         self.add_button("Start tensorboard", TENSOR_BUTTON_POS, self.start_tensorboard)
-
-        self.add_checkbox("Show games", SHOW_GAMES_CHECKBOX_POS, self.config.show_games_obj)
 
         # Add the log
         Label(self.master, text="Log:", font=DEFAULT_FONT).place(x=10, y=370)

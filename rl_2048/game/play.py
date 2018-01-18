@@ -17,8 +17,8 @@ MIN_KEEP_PROB = 0.01
 class Play(object):
 
     @staticmethod
-    def play_game(strategy):
-        game = Game()
+    def play_game(strategy, window=None):
+        game = Game(window=window)
         state = game.state().copy()
         game_over = game.game_over()
 
