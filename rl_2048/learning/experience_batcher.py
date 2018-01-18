@@ -57,7 +57,7 @@ class ExperienceBatcher(object):
                 epsilon = max(MIN_EPSILON, 1.0 - (i - START_DECREASE_EPSILON_GAMES) / DECREASE_EPSILON_GAMES)
 
             strategy = Strategies.make_epsilon_greedy_strategy(self.get_q_values, epsilon)
-            _, experiences = Play.play_game(strategy)
+            _, _, experiences = Play.play_game(strategy)
 
             for experience in Play.under_sample_game(experiences):
                 self.experience_collector.add(experience)

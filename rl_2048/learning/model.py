@@ -4,8 +4,6 @@ from __future__ import division
 from __future__ import print_function
 
 import tensorflow as tf
-from rl_2048.game.play import Play
-from rl_2048.learning.Strategies import Strategies
 
 NUM_TILES = 16
 NUM_ACTIONS = 4
@@ -13,7 +11,7 @@ NUM_ACTIONS = 4
 # Number of hidden units in each hidden layer
 HIDDEN_SIZES = [256, 256]
 
-OPTIMIZER_CLASS = tf.train.GradientDescentOptimizer
+OPTIMIZER_CLASS = tf.train.AdamOptimizer
 ACTIVATION_FUNCTION = tf.nn.relu
 WEIGHT_INIT_SCALE = 0.01
 
@@ -30,7 +28,9 @@ class FeedModel(object):
         self.state_batch_placeholder = tf.placeholder(tf.float32, shape=(None, NUM_TILES))
         self.targets_placeholder = tf.placeholder(tf.float32, shape=(None,))
         self.actions_placeholder = tf.placeholder(tf.int32, shape=(None,))
-        self.placeholders = (self.state_batch_placeholder, self.targets_placeholder, self.actions_placeholder)
+        self.score_placeholder = tf.placeholder(tf.int32, shape=(None,))
+        self.max_value_placeholder = tf.placeholder(tf.int32, shape=(None,))
+        self.placeholders = (self.state_batch_placeholder, self.targets_placeholder, self.actions_placeholder, self.score_placeholder, self.max_value_placeholder)
 
         self.weights, self.biases, self.activations = build_inference_graph(self.state_batch_placeholder, HIDDEN_SIZES)
         self.q_values = self.activations[-1]
@@ -40,6 +40,8 @@ class FeedModel(object):
         tf.summary.scalar("Average Target", tf.reduce_mean(self.targets_placeholder))
         tf.summary.scalar("Learning Rate", self.learning_rate)
         tf.summary.scalar("Loss", self.loss)
+        tf.summary.scalar("Game score", tf.reduce_mean(self.score_placeholder))
+        tf.summary.scalar("Game tile", tf.reduce_max(self.max_value_placeholder))
         tf.summary.histogram("States", self.state_batch_placeholder)
         tf.summary.histogram("Targets", self.targets_placeholder)
 
@@ -85,8 +87,7 @@ def build_inference_graph(state_batch, hidden_sizes):
     return weights, biases, activations
 
 
-def build_fully_connected_layer(name, input_batch, input_size, layer_size,
-                                activation_function=lambda x: x):
+def build_fully_connected_layer(name, input_batch, input_size, layer_size, activation_function=lambda x: x):
     """Builds a fully connected layer.
 
     Args:
@@ -125,7 +126,7 @@ def build_loss(q_values, targets, actions):
     Returns:
       loss: Loss tensor of type float.
     """
-    # Get Q-Value prodections for the given actions
+    # Get Q-Value predictions for the given actions
     batch_size = tf.shape(q_values)[0]
     q_value_indices = tf.range(0, batch_size) * NUM_ACTIONS + actions
     relevant_q_values = tf.gather(tf.reshape(q_values, [-1]), q_value_indices)

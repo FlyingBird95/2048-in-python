@@ -33,7 +33,7 @@ class ExperienceReplay(object):
 
         x = 0
         while True:
-            _, experience_list = Play.play_game(strategy)
+            _, _, experience_list = Play.play_game(strategy)
             experience_list = Play.under_sample_game(experience_list)
             local_print(x, len(experience_list));
 

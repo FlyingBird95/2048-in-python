@@ -33,7 +33,7 @@ class Play(object):
 
             experience_list.append(Experience(old_state, next_action, reward, state, game_over, game.available_actions()))
 
-        return game.score(), experience_list
+        return game.score(), np.amax(state), experience_list
 
     @staticmethod
     def under_sample_game(experience_list):

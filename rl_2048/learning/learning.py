@@ -66,11 +66,11 @@ def run_training(train_dir):
             session.run(model.init)
 
             experience_replay = ExperienceReplay()
-            experience_replay.generate(100, Strategies.random_strategy, True)  # 10000
+            experience_replay.generate(10000, Strategies.random_strategy, True)
             experience_replay.save(os.path.join(train_dir, EXPERIENCE_FILE_NAME))
 
             experience_reference = ExperienceReplay()
-            experience_reference.generate(1000, Strategies.random_strategy, True)  # 100000
+            experience_reference.generate(100000, Strategies.random_strategy, True)
             experience_reference.save(os.path.join(train_dir, REFERENCE_FILE_NAME))
 
         run_inference = make_run_inference(session, model)
@@ -79,45 +79,50 @@ def run_training(train_dir):
         batcher = ExperienceBatcher(experience_replay, run_inference, get_q_values, STATE_NORMALIZE_FACTOR)
 
         for state_batch, targets, actions in batcher.get_batches_stepwise():
-
-            # score = test(get_q_values, 1)
             global_step, _ = session.run([model.global_step, model.train_op],
                                          feed_dict={
                                            model.state_batch_placeholder: state_batch,
                                            model.targets_placeholder: targets,
-                                           model.actions_placeholder: actions, })
+                                           model.actions_placeholder: actions,
+                                           model.score_placeholder: np.asarray([]),
+                                           model.max_value_placeholder: np.asarray([]), })
 
-            if global_step % 100 == 0 and global_step != 0:  # 10000
+            if global_step % 10000 == 0 and global_step != 0:
                 saver.save(session, train_dir + "/checkpoint", global_step=global_step)
-                loss = write_summaries(session, batcher, model, experience_reference.get_experience(), summary_writer)
+                loss = write_summaries(session, batcher, model, experience_reference.get_experience(), get_q_values, summary_writer)
                 experience_replay.save(os.path.join(train_dir, EXPERIENCE_FILE_NAME))
                 experience_reference.save(os.path.join(train_dir, REFERENCE_FILE_NAME))
                 print("Step:", global_step, "Loss:", loss)
-            if global_step % 100000 == 0 and global_step != 0:
+            if global_step % 1000000 == 0 and global_step != 0:
                 break
 
 
 def test(q_values, games):
     strategy = Strategies.make_greedy_strategy(q_values)
     scores = []
+    tiles = []
     for _ in range(games):
-        score, _ = Play.play_game(strategy)
+        score, max_tile, _ = Play.play_game(strategy)
         scores.append(score)
+        tiles.append(max_tile)
+    return scores, tiles
 
-    return sum(scores) / len(scores)
 
-
-def write_summaries(session, batcher, model, test_experiences, summary_writer):
+def write_summaries(session, batcher, model, test_experiences, get_q_values, summary_writer):
     """Writes summaries by running the model on test_experiences. Returns loss."""
 
+    score, tiles = test(get_q_values, 25)
+
     state_batch, targets, actions = batcher.experiences_to_batches(test_experiences)
-    state_batch_p, targets_p, actions_p = model.placeholders
+    state_batch_p, targets_p, actions_p, score_p, max_p = model.placeholders
     summary_str, global_step, loss = session.run(
       [model.summary_op, model.global_step, model.loss],
       feed_dict={
         state_batch_p: state_batch,
         targets_p: targets,
-        actions_p: actions, })
+        actions_p: actions,
+        score_p: np.asarray(score),
+        max_p: np.asarray(tiles), })
     summary_writer.add_summary(summary_str, global_step)
     tf.summary.merge_all()
     return loss
