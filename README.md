@@ -23,12 +23,12 @@ To run the code, you'll need to update your `PYTHONPATH`:
 source set_pythonpath.sh
 ```
 
-Now, you should be able to run the tests:
+Now, you should be able to run the GUI using the following command:
 
 ```bash
-py.test
+python3 -m rl_2048
 ```
 
 ## Source Code Structure
 
-All python source code lives in `py_2048_rl`.
+All python source code lives in `rl_2048`.
