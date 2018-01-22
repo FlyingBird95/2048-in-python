@@ -1,6 +1,0 @@
-model_checkpoint_path: "checkpoint-3000000"
-all_model_checkpoint_paths: "checkpoint-2960000"
-all_model_checkpoint_paths: "checkpoint-2970000"
-all_model_checkpoint_paths: "checkpoint-2980000"
-all_model_checkpoint_paths: "checkpoint-2990000"
-all_model_checkpoint_paths: "checkpoint-3000000"
