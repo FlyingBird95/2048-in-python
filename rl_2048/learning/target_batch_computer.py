@@ -8,7 +8,7 @@ import numpy as np
 
 
 GAMMA = 0.00
-MERGED_REWARD_FACTOR = 0.0
+MERGED_REWARD_FACTOR = 0.125
 LOST_REWARD = -1.0
 
 
@@ -23,8 +23,7 @@ class TargetBatchComputer(object):
         """
         self.run_inference = run_inference
 
-    def compute(self, reward_batch, bad_action_batch, next_state_batch,
-                available_actions_batch, merged):
+    def compute(self, reward_batch, bad_action_batch, next_state_batch, available_actions_batch, merged):
         """Computes the target batch for the neural network.
 
         Args:
@@ -42,8 +41,7 @@ class TargetBatchComputer(object):
               have been merged at tha current experience.
 
         Returns:
-          A (batch_size,) float numpy array that contains the target values for the
-              current batch.
+          A (batch_size,) float numpy array that contains the target values for the current batch.
         """
 
         (batch_size,) = reward_batch.shape
