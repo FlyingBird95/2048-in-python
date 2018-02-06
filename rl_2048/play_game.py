@@ -5,7 +5,6 @@ from __future__ import division
 from __future__ import print_function
 
 from rl_2048.game.play import Play
-from rl_2048.gui.plot import show_plot
 from rl_2048.learning import learning
 from rl_2048.learning.model import FeedModel
 from rl_2048.learning.Strategies import Strategies
@@ -21,7 +20,6 @@ def average_score(strategy, window=None):
     for _ in range(window.config.get_num_games()):
         score, _ = Play.play_game(strategy, window=window)
         scores.append(score)
-    show_plot(scores)
     return np.mean(scores)
 
 
