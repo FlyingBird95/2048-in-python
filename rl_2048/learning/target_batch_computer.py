@@ -7,7 +7,7 @@ from __future__ import print_function
 import numpy as np
 
 
-GAMMA = 0.00
+GAMMA = 0.95
 MERGED_REWARD_FACTOR = 0.125
 LOST_REWARD = -1.0
 

@@ -9,7 +9,7 @@ NUM_TILES = 16
 NUM_ACTIONS = 4
 
 # Number of hidden units in each hidden layer
-HIDDEN_SIZES = [256, 256]
+HIDDEN_SIZES = [512, 512]
 
 OPTIMIZER_CLASS = tf.train.GradientDescentOptimizer
 ACTIVATION_FUNCTION = tf.nn.relu
