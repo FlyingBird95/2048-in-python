@@ -23,10 +23,10 @@ To run the code, you'll need to update your `PYTHONPATH`:
 source set_pythonpath.sh
 ```
 
-Now, you should be able to run start learning, [train_dir] is a training directory (which should either not exist, or contain a previous training run to continue training):
+Now, you should be able to run start learning, 'train_dir' is a training directory (which should either not exist, or contain a previous training run to continue training):
 
 ```bash
-learning.py [train_dir]
+learning.py train_dir
 ```
 
 Within the model.py file the INIT_LEARNING_RATE, and HIDDEN_SIZES can be changed.
@@ -34,5 +34,4 @@ Within experience_batcher.py the BATCH_SIZE and MIN_EPSILON can be changed.
 Within target_batch_computer.py the GAMMA, and rewards can be specified.
 
 ## Source Code Structure
-
 All python source code is in `rl_2048`.
