@@ -23,12 +23,15 @@ To run the code, you'll need to update your `PYTHONPATH`:
 source set_pythonpath.sh
 ```
 
-Now, you should be able to run the GUI using the following command:
+Now, you should be able to run start learning, 'train_dir' is a training directory (which should either not exist, or contain a previous training run to continue training):
 
 ```bash
-python3 -m rl_2048
+learning.py train_dir
 ```
 
-## Source Code Structure
+Within the model.py file the INIT_LEARNING_RATE, and HIDDEN_SIZES can be changed.
+Within experience_batcher.py the BATCH_SIZE and MIN_EPSILON can be changed.
+Within target_batch_computer.py the GAMMA, and rewards can be specified.
 
-All python source code lives in `rl_2048`.
+## Source Code Structure
+All python source code is in `rl_2048`.
