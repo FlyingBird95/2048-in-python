@@ -93,7 +93,7 @@ def run_training(train_dir):
                 experience_replay.save(os.path.join(train_dir, EXPERIENCE_FILE_NAME))
                 experience_reference.save(os.path.join(train_dir, REFERENCE_FILE_NAME))
                 print("Step:", global_step, "Loss:", loss)
-            if global_step % 3000000 == 0 and global_step != 0:
+            if global_step % 2000000 == 0 and global_step != 0:
                 break
 
 
